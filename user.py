@@ -12,6 +12,10 @@ class User:
 
         self.cuisines = ["indian", "italian"]
 
-        self.allegies = ["dairy"]
+        self.allergies = ["dairy"]
 
         self.level_of_activity = 5
+
+        self.health_goals = ["eat_less_fat"]
+
+        self.max_number_of_ingredients = 10

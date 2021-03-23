@@ -1,10 +1,13 @@
-from flask import Flask, redirect, render_template, url_for
+from flask import Flask, jsonify, redirect, render_template, url_for
 import jinja2
 from markupsafe import escape
+import pdb
 
 from user import User
 from forms.preferences import PreferencesForm
 from forms.sign_up import SignUpForm
+
+from recommendation_engine import RecommendationEngine
 
 import os
 SECRET_KEY = os.urandom(32)
@@ -59,6 +62,21 @@ def preferences():
         user=None,
         title="Preferences"
     )
+
+@app.route('/recommend')
+def recommend():
+
+    user = User()
+    user.allergies = ["celery"]
+    user.time_to_cook = 30
+
+    recommender = RecommendationEngine(user)
+    recommendations = recommender.get_recommendation_filters()
+
+    # TODO: create a Jinja2 template for showing responses
+    # (not just turning a JSON object)
+    return jsonify(recommendations)
+
 
 # For user
 # https://flask.palletsprojects.com/en/1.1.x/quickstart/#variable-rules

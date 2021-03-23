@@ -1,0 +1,102 @@
+{% include 'header.html' %}
+
+{% block content %}
+
+<div class="form-wrapper">
+    <h2 class="title mb-4">Sign Up</h2>
+
+    <form class="form" method="POST" action="{{ url_for('signup') }}">
+
+        <div class="form-group row">
+
+            <div class="col-xs-1">
+                <label for="userNames" class="col-sm-2 col-form-label">
+                    <i class="fas fa-user fa-lg pl-4 pt-1 green-text"></i>
+                </label>
+            </div>
+
+            <div class="col-md-3">
+
+                {{ form.firstName(class="form-control", placeholder="First name", required=True) }}
+
+                {% if form.firstName.errors %}
+                <ul class="errors text-danger">
+                    {% for error in form.firstName.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            <div class="col-md-3">
+                {{ form.lastName(class="form-control", placeholder="Last name", required=True) }}
+
+                {% if form.lastName.errors %}
+                <ul class="errors text-danger">
+                    {% for error in form.lastName.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-xs-1">
+                <label for="userEmail" class="col-sm-2 col-form-label">
+                    <i class="fas fa-envelope fa-lg pl-4 pt-1 green-text"></i>
+                </label>
+            </div>
+
+            <div class="col-md-4">
+                {{ form.email(class="form-control", placeholder="Email address", type="email", required=True) }}
+
+                {% if form.email.errors %}
+                <ul class="errors text-danger">
+                    {% for error in form.email.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-xs-1">
+                <label for="password" class="col-sm-2 col-form-label">
+                    <i class="fas fa-lock fa-lg pl-4 pt-1 green-text"></i>
+                </label>
+            </div>
+
+            <div class="col-md-3">
+                {{ form.password(class="form-control", placeholder="Enter password", type="password", required=True) }}
+
+                {% if form.password.errors %}
+                <ul class="errors text-danger">
+                    {% for error in form.password.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="col-md-3">
+                {{ form.confirmPassword(class="form-control", placeholder="Confirm password", type="password", required=True) }}
+
+                {% if form.confirmPassword.errors %}
+                <ul class="errors text-danger">
+                    {% for error in form.confirmPassword.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="pl-4">
+            {{ form.submit(class="btn btn-primary btn-sm mt-3") }}
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

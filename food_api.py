@@ -5,8 +5,9 @@ import requests
 
 from user import User
 
-# filename = '~/Downloads/archive(1)/PP_recipes.csv'
-FILENAME = '~/Downloads/archive(1)/RAW_recipes.csv'
+FILENAME = 'resources/RAW_recipes.csv'
+
+DF = pd.read_csv(FILENAME)
 
 
 def filter_by_time(df, user):
@@ -82,8 +83,8 @@ def get_unique_tags(df):
     pdb.set_trace()
 
 
-def get_receipe_dataset():
-    """ Load receipe dataset from csv downloaded from Kaggle """
+def get_recipe_dataset():
+    """ Load recipe dataset from csv downloaded from Kaggle """
     df = pd.read_csv(FILENAME)
     print("# of rows - no filtering: %s" % len(df))
 
@@ -94,7 +95,9 @@ def get_receipe_dataset():
 
 
 def generate_recommendations(user):
-    df = get_receipe_dataset()
+    # This is a little janky - once I preprocess the data I'll clean it up
+    # df = get_recipe_dataset()
+    df = DF
 
     df = filter_by_time(df, user)
     print("# of rows - time filter: %s" % len(df))

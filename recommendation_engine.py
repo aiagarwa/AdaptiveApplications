@@ -5,7 +5,7 @@ import food_api
 
 # Stereotypes attributes are stored in an .ini file
 config = configparser.ConfigParser()
-config.read('stereotypes.ini')
+config.read('resources/stereotypes.ini')
 
 
 class RecommendationEngine():

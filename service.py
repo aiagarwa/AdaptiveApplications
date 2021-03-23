@@ -9,12 +9,19 @@ from forms.sign_up import SignUpForm
 
 from recommendation_engine import RecommendationEngine
 
+from extension import db
 import os
+import click
 SECRET_KEY = os.urandom(32)
 
 
 app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = SECRET_KEY
+# database config
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://otter@adaptivedb:fdT:)qvNmZ8D5%*d>d.W@adaptivedb.postgres.database.azure.com/otter"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+
 
 @app.route('/')
 def index():
@@ -83,6 +90,29 @@ def recommend():
 @app.route('/user/<username>')
 def profile(username):
     return '{}\'s profile'.format(escape(username))
+
+
+# test add user
+@app.route('/add')
+def adduser():
+    user = User()
+    user.userName = os.urandom(8)
+    db.session.add(user)
+    db.session.commit()
+    return user.userName
+
+@app.route('/query')
+def queryuser():
+    users = User.query.all()
+    ans = ""
+    for user in users:
+        ans += user.userName + " -- "
+    return ans
+
+@app.before_first_request
+def initdb():
+    print("-----------")
+    db.create_all()
 
 with app.test_request_context():
     print(url_for('index'))

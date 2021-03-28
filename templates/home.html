@@ -4,8 +4,35 @@
     <h1 class="text-green">Welcome {{ username }}!</h1>
 </div>
 
-<div class="container">
-    Set your preferences
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card" style="width: 25rem;">
+            <div class="p-3 text-center">
+                <a href="/preferences">
+                    <i class="fas fa-pepper-hot green-text fa-7x"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"><a href="/preferences">Preferences</a></h5>
+                <p class="card-text text-muted">Tell us about your food preferences - spiciness, cuisines, allergies...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card" style="width: 25rem;">
+            <div class="p-3 text-center">
+                <a href="/recommend">
+                    <i class="fas fa-utensils green-text fa-7x"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title"><a href="/recommend">Get Recommendation</a></h5>
+                <p class="card-text text-muted">Get a personalised meal recommendation...</p>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {% include 'templates/footer.html' %}

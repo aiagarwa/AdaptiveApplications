@@ -1,11 +1,14 @@
 from flask import Flask, jsonify, redirect, render_template, session, url_for
+import json
 import jinja2
 from markupsafe import escape
 import pdb
+import pickle
 
 from user import User
 from forms.log_in import LogInForm
 from forms.preferences import PreferencesForm
+from forms.recommend import RecommendForm
 from forms.sign_up import SignUpForm
 
 from recommendation_engine import RecommendationEngine
@@ -45,8 +48,6 @@ def login():
 
     form = LogInForm()
 
-    print("log in form")
-
     if form.validate_on_submit():
         print("attempting to log in")
         name = form.username.data
@@ -58,6 +59,8 @@ def login():
                 # Set user's session variables
                 session['logged_in'] = True
                 session["username"] = form.username.data
+                session["preferences"] = pickle.dumps(data.preferences)
+
                 return redirect(url_for('index'))
             else:
                 print("don't log user in")
@@ -119,19 +122,39 @@ def preferences():
         title="Preferences"
     )
 
-@app.route('/recommend')
+
+@app.route('/recommend', methods=["GET", "POST"])
 def recommend():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
 
-    user = User()
-    user.allergies = ["celery"]
-    user.time_to_cook = 30
+    prefs = pickle.loads(session["preferences"])
 
-    recommender = RecommendationEngine(user)
-    recommendations = recommender.get_recommendation_filters()
+    form = RecommendForm()
+    if form.validate_on_submit():
+        prefs.health_goals = form.healthGoals.data
+        prefs.level_of_activity = form.levelOfActivity.data
+        timeToCook = form.timeToCook.data
+        prefs.time_to_cook = timeToCook
 
-    # TODO: create a Jinja2 template for showing responses
-    # (not just turning a JSON object)
-    return jsonify(recommendations)
+        recommender = RecommendationEngine(prefs, timeToCook)
+        recommendations = recommender.get_recommendation_filters()
+
+        return jsonify(recommendations)
+
+    return render_template(
+        "recommendations.html",
+        form=form,
+        template="templates/recommendations.html",
+        username=session["username"],
+        logged_in=True,
+        title="Recommendation"
+    )
+
+
+@app.route('/drop')
+def dropdb():
+    db.drop_all()
 
 
 # For user

@@ -33,7 +33,7 @@ class RecommendationEngine():
          - We could make this a stereotype for their health goal(s)?
         """
 
-        # Example of goal: 'eat_less_fat'
+        # Example of goal: 'less_fat'
         goal = self.user.health_goals[0]
 
         # TODO: if users can have more than one health goal this will need to

@@ -18,7 +18,7 @@ SECRET_KEY = os.urandom(32)
 app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = SECRET_KEY
 # database config
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://otter@adaptivedb:fdT:)qvNmZ8D5%*d>d.W@adaptivedb.postgres.database.azure.com/otter"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://otter@aagroup:fdT:)qvNmZ8D5%*d>d.W@aagroup.postgres.database.azure.com/otter"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 

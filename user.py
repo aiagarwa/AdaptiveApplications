@@ -3,14 +3,14 @@ from extension import db
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    userName = db.Column(db.String(20), unique=True)
+    userName = db.Column(db.String(80), unique=True)
+    # password = db.Column(db.String(80))
 
-    def __init__(self, name='John', age=25):
+    def __init__(self, username, password):
+        self.userName = username
+        self.password = password
 
-        self.name = name
-        self.age = age
-
-        self.set_default_values()
+        # self.set_default_values()
 
 
     def set_default_values(self):

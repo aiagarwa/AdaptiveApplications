@@ -13,8 +13,8 @@ from wtforms.validators import (
 )
 
 
-class SignUpForm(FlaskForm):
-    """ Sign up for a user account """
+class LogInForm(FlaskForm):
+    """ Form for user to log in """
 
     username = StringField(
         'Username',
@@ -26,11 +26,4 @@ class SignUpForm(FlaskForm):
             DataRequired(message="Please enter a password."),
         ]
     )
-    confirmPassword = PasswordField(
-        'Repeat Password',
-        [
-            EqualTo('password', message='Passwords must match.')
-        ]
-    )
-    birthday = DateField('Your Birthday')
     submit = SubmitField('Submit')

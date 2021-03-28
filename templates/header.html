@@ -28,21 +28,28 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active pr-3">
-                <a href="/preferences">Preferences</a>
-            </li>
 
-            {% if user is not none %}
-                <li class="nav-item active text-white">
-                    <i class="fas fa-user-circle fa-lg mr-2"></i>
-                    {{ user.name }}
+
+            {% if logged_in == False %}
+                <li class="nav-item active pr-3">
+                    <a href="/login">
+                        <!-- <i class="fas fa-user-circle fa-lg mr-2"></i> -->
+                        Log In
+                    </a>
                 </li>
-            {% else %}
                 <li class="nav-item active">
                     <a href="/signup">
-                        <i class="fas fa-user-circle fa-lg mr-2"></i>
+                        <!-- <i class="fas fa-user-circle fa-lg mr-2"></i> -->
                         Sign Up
                     </a>
+                </li>
+            {% else %}
+                <li class="nav-item active pr-3">
+                    <a href="/preferences">Preferences</a>
+                </li>
+                <li class="nav-item active text-white">
+                    <i class="fas fa-user-circle fa-lg mr-2"></i>
+                    {{ username }}
                 </li>
             {% endif %}
         </ul>

@@ -3,9 +3,9 @@
 {% block content %}
 
 <div class="form-wrapper">
-    <h2 class="title mb-4">Sign Up</h2>
+    <h2 class="title mb-4">Log In</h2>
 
-    <form class="form" method="POST" action="{{ url_for('signup') }}">
+    <form class="form" method="POST" action="{{ url_for('login') }}">
 
         <div class="form-group row">
 
@@ -42,18 +42,6 @@
                 {% if form.password.errors %}
                 <ul class="errors text-danger">
                     {% for error in form.password.errors %}
-                    <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </div>
-
-            <div class="col-md-3">
-                {{ form.confirmPassword(class="form-control", placeholder="Confirm password", type="password", required=True) }}
-
-                {% if form.confirmPassword.errors %}
-                <ul class="errors text-danger">
-                    {% for error in form.confirmPassword.errors %}
                     <li>{{ error }}</li>
                     {% endfor %}
                 </ul>

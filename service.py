@@ -1,9 +1,10 @@
-from flask import Flask, jsonify, redirect, render_template, url_for
+from flask import Flask, jsonify, redirect, render_template, session, url_for
 import jinja2
 from markupsafe import escape
 import pdb
 
 from user import User
+from forms.log_in import LogInForm
 from forms.preferences import PreferencesForm
 from forms.sign_up import SignUpForm
 
@@ -25,35 +26,82 @@ db.init_app(app)
 
 @app.route('/')
 def index():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     templateLoader = jinja2.FileSystemLoader(searchpath="./")
     templateEnv = jinja2.Environment(loader=templateLoader)
 
-    user = User(name='John', age=36)
-
     TEMPLATE_FILE = "templates/home.html"
     template = templateEnv.get_template(TEMPLATE_FILE)
-    outputText = template.render(title='Home', user=user)
+    return template.render(
+        title='Home',
+        username=session["username"])
 
-    return outputText
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return 'login'
+    """Login Form"""
+
+    form = LogInForm()
+
+    print("log in form")
+
+    if form.validate_on_submit():
+        print("attempting to log in")
+        name = form.username.data
+        password = form.password.data
+        try:
+            # data = User.query.filter_by(username=name, password=password).first()
+            data = User.query.filter_by(userName=name).first()
+            if data is not None:
+                # Set user's session variables
+                session['logged_in'] = True
+                session["username"] = form.username.data
+                return redirect(url_for('index'))
+            else:
+                print("don't log user in")
+                return 'Dont Login'
+        except:
+            print("Error occurred - don't log user in")
+            return "Dont Login"
+
+    return render_template(
+        "log_in.html",
+        form=form,
+        template="templates/log_in.html",
+        username=None,
+        logged_in=False,
+        title="Log In"
+    )
+
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
     form = SignUpForm()
 
     if form.validate_on_submit():
-        return "ok"
+        new_user = User(
+            username=form.username.data,
+            password=form.password.data)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        session['logged_in'] = True
+        session["username"] = form.username.data
+
+        return redirect(url_for('index'))
 
     return render_template(
         "sign_up.html",
         form=form,
         template="templates/sign_up.html",
-        user=None,
+        username=None,
+        logged_in=False,
         title="Sign Up"
     )
+
 
 @app.route('/preferences', methods=["GET", "POST"])
 def preferences():
@@ -66,7 +114,8 @@ def preferences():
         "preferences.html",
         form=form,
         template="templates/preferences.html",
-        user=None,
+        username=session["username"],
+        logged_in=True,
         title="Preferences"
     )
 

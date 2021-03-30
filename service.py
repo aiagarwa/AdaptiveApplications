@@ -158,6 +158,8 @@ def recommend():
         timeToCook = form.timeToCook.data
         prefs.time_to_cook = timeToCook
 
+        prefs.current_mood = form.mood.data
+
         recommender = RecommendationEngine(prefs, timeToCook)
         recommendations = recommender.get_recommendation_filters()
 

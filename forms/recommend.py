@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import (
+    SelectField,
     SelectMultipleField,
     StringField,
     SubmitField,
@@ -29,5 +30,14 @@ class RecommendForm(FlaskForm):
     timeToCook = IntegerRangeField(
         'Time to Cook',
         default=30,
+    )
+    mood = SelectField(
+        'Mood',
+        [DataRequired()],
+        choices=[
+            ('happy', 'happy'),
+            ('sad', 'sad'),
+            ('angry', 'angry'),
+        ],
     )
     submit = SubmitField('Submit')

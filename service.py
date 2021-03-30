@@ -95,9 +95,10 @@ def signup():
         db.session.commit()
 
         session['logged_in'] = True
-        session["username"] = form.username.data
+        session['username'] = form.username.data
+        session["preferences"] = pickle.dumps(new_user.preferences)
 
-        return redirect(url_for('index'))
+        return redirect(url_for('preferences'))
 
     return render_template(
         "sign_up.html",
@@ -114,9 +115,24 @@ def preferences():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
 
+    # Get user preferences
+    prefs = pickle.loads(session["preferences"])
+
     form = PreferencesForm()
     if form.validate_on_submit():
-        return "ok"
+        # Get form values and update user preferences
+        data = form.data
+        prefs.update(data)
+
+        # Update user preferences in the database
+        user = User.query.filter_by(userName=session["username"]).first()
+        user.preferences = prefs
+        db.session.commit()
+
+        # Update user preferences in the session
+        session["preferences"] = pickle.dumps(prefs)
+
+        return redirect(url_for('index'))
 
     return render_template(
         "preferences.html",

@@ -33,15 +33,43 @@
                 Spice
             </div>
             <div class="col-md-3">
-                {{ form.spicyness(min=0, max=10, oninput="outputUpdate(value)") }}
+                {{ form.spiciness(min=0, max=10, oninput="outputUpdate(value)") }}
                 <output for="spice" id="selected-spice" class="ml-3">
-                    {{ form.spicyness.data }}
+                    {{ form.spiciness.data }}
                 </output>
             </div>
         </div>
 
-        <div class="pl-4">
-            {{ form.submit(class="btn btn-primary btn-sm mt-3") }}
+        <hr class="my-5" />
+
+        <h4 class="">What are you favourite foods for each mood?</h4>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="py-4 text-center text-success">
+                    <i class="fas fa-smile fa-2x pt-1 px-4"></i>
+                    <h5 class="pt-2">Happy</h5>
+                </div>
+                {{ form.mood_happy(class="form-control") }}
+            </div>
+            <div class="col-md-4">
+                <div class="py-4 text-center text-info">
+                    <i class="fas fa-frown fa-2x pt-1 px-4"></i>
+                    <h5 class="pt-2">Sad</h5>
+                </div>
+                {{ form.mood_sad(class="form-control") }}
+            </div>
+            <div class="col-md-4">
+                <div class="py-4 text-center text-danger ">
+                    <i class="fas fa-angry fa-2x pt-1 px-4"></i>
+                    <h5 class="pt-2">Angry</h5>
+                </div>
+                {{ form.mood_angry(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="text-center pt-3">
+            {{ form.csrf_token }}
+            {{ form.submit(class="btn btn-primary mt-3") }}
         </div>
 
     </form>

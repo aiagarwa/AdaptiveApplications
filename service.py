@@ -45,9 +45,10 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Login Form"""
+    if session.get('logged_in'):
+        return redirect(url_for('index'))
 
     form = LogInForm()
-
     if form.validate_on_submit():
         print("attempting to log in")
         name = form.username.data
@@ -81,8 +82,10 @@ def login():
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
-    form = SignUpForm()
+    if session.get('logged_in'):
+        return redirect(url_for('index'))
 
+    form = SignUpForm()
     if form.validate_on_submit():
         new_user = User(
             username=form.username.data,
@@ -108,8 +111,10 @@ def signup():
 
 @app.route('/preferences', methods=["GET", "POST"])
 def preferences():
-    form = PreferencesForm()
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
 
+    form = PreferencesForm()
     if form.validate_on_submit():
         return "ok"
 
@@ -150,6 +155,13 @@ def recommend():
         logged_in=True,
         title="Recommendation"
     )
+
+
+@app.route('/sign_out')
+def sign_out():
+    session.clear()
+
+    return redirect(url_for('login'))
 
 
 @app.route('/drop')

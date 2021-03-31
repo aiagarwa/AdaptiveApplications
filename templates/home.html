@@ -1,38 +1,31 @@
 {% include 'templates/header.html' %}
 
-<div class="page-header">
-    <h1 class="text-green">Welcome {{ username }}!</h1>
-</div>
+<main role="main">
 
-<div class="row mt-5">
-    <div class="col-md-6">
-        <div class="card" style="width: 25rem;">
-            <div class="p-3 text-center">
-                <a href="/preferences">
-                    <i class="fas fa-pepper-hot green-text fa-7x"></i>
-                </a>
-            </div>
-            <div class="card-body">
-                <h5 class="card-title"><a href="/preferences">Preferences</a></h5>
-                <p class="card-text text-muted">Tell us about your food preferences - spiciness, cuisines, allergies...</p>
-            </div>
+    <div class="jumbotron jumbotron-fluid bg">
+        <div class="home-header-text">
+            <h1 class="display-3">Welcome, {{ username }}!</h1>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="card" style="width: 25rem;">
-            <div class="p-3 text-center">
-                <a href="/recommend">
-                    <i class="fas fa-utensils green-text fa-7x"></i>
-                </a>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 offset-md-1 bg-theme-white py-3 px-4 mr-4" style="border-radius: 5px;">
+                <h2 class="theme-green-light">Set Your Preferences</h2>
+                <p>
+                    Tell us about your food preferences - spiciness, cuisines, allergies...
+                </p>
+                <p>
+                    <a class="btn btn-secondary" href="/preferences" role="button">Preferences &raquo;</a>
+                </p>
             </div>
-            <div class="card-body">
-                <h5 class="card-title"><a href="/recommend">Get Recommendation</a></h5>
-                <p class="card-text text-muted">Get a personalised meal recommendation...</p>
+            <div class="col-md-5 bg-theme-white py-3 px-4 ml-4" style="border-radius: 5px;">
+                <h2 class="theme-green-light">Get a Recommendation</h2>
+                <p>Get a personalised meal recommendation...</p>
+                <p><a class="btn btn-secondary" href="/recommend" role="button">Recommend &raquo;</a></p>
             </div>
-        </div>
     </div>
 
-</div>
+</main>
 
 {% include 'templates/footer.html' %}

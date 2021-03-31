@@ -6,3 +6,74 @@
     /*background-color: #008000;*/
     background-color: #80ff00;
 }
+
+.bg {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("background_plates.jpg");
+  height: 50%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+.bg-prefs {
+  background-image: url("background_plates.jpg");
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+.prefs-content {
+    margin-top: 0px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    width: 100%;
+    padding: 20px;
+}
+
+.theme-white {
+    color: #e7e7de;
+}
+
+.theme-blue {
+    color: #1b2852;
+}
+
+.theme-green-light {
+    color: #8ca53a;
+}
+
+.theme-green-dark {
+    color: #556527;
+}
+
+.theme-grey {
+    color: #444b47;
+}
+
+.bg-theme-white {
+    background-color: #e7e7de;
+}
+
+.bg-theme-grey {
+    background-color: #444b47;
+}
+
+.bg-theme-green-light {
+    background-color: #8ca53a;
+}
+
+.home-header-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #e7e7de;
+}

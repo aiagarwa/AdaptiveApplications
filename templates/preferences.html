@@ -2,77 +2,95 @@
 
 {% block content %}
 
-<div class="form-wrapper">
-    <h2 class="title mb-4">Preferences</h2>
+<div class="bg-prefs pt-5">
+    <div class="container prefs-content bg-white" style="border-radius: 5px;">
+        <div class="form-wrapper ">
+            <h2 class="title mb-4 theme-green-dark">Preferences</h2>
 
-    <form class="form" method="POST" action="{{ url_for('preferences') }}">
+            <form class="form theme-grey" method="POST" action="{{ url_for('preferences') }}">
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <i class="fas fa-utensils fa-lg pt-1 px-4"></i>
+                                Cuisines
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.cuisines(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="form-group row">
-            <div class="col-md-2">
-                <i class="fas fa-utensils fa-lg pt-1 px-4"></i>
-                Cuisines
-            </div>
-            <div class="col-md-4">
-                {{ form.cuisines(class="form-control") }}
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <div class="col-md-2">
-                <i class="fas fa-notes-medical fa-lg pt-1 px-4"></i>
-                Allergies
-            </div>
-            <div class="col-md-4">
-                {{ form.allergies(class="form-control") }}
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <div class="col-md-2">
-                <i class="fas fa-pepper-hot fa-lg pt-1 px-4"></i>
-                Spice
-            </div>
-            <div class="col-md-3">
-                {{ form.spiciness(min=0, max=10, oninput="outputUpdate(value)") }}
-                <output for="spice" id="selected-spice" class="ml-3">
-                    {{ form.spiciness.data }}
-                </output>
-            </div>
-        </div>
-
-        <hr class="my-5" />
-
-        <h4 class="">What are you favourite foods for each mood?</h4>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="py-4 text-center text-success">
-                    <i class="fas fa-smile fa-2x pt-1 px-4"></i>
-                    <h5 class="pt-2">Happy</h5>
+                    <div class="col-md-6 form-group">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <i class="fas fa-notes-medical fa-lg pt-1 px-4"></i>
+                                Allergies
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.allergies(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                {{ form.mood_happy(class="form-control") }}
-            </div>
-            <div class="col-md-4">
-                <div class="py-4 text-center text-info">
-                    <i class="fas fa-frown fa-2x pt-1 px-4"></i>
-                    <h5 class="pt-2">Sad</h5>
-                </div>
-                {{ form.mood_sad(class="form-control") }}
-            </div>
-            <div class="col-md-4">
-                <div class="py-4 text-center text-danger ">
-                    <i class="fas fa-angry fa-2x pt-1 px-4"></i>
-                    <h5 class="pt-2">Angry</h5>
-                </div>
-                {{ form.mood_angry(class="form-control") }}
-            </div>
-        </div>
 
-        <div class="text-center pt-3">
-            {{ form.csrf_token }}
-            {{ form.submit(class="btn btn-primary mt-3") }}
-        </div>
+                <hr class="my-4" />
 
-    </form>
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <i class="fas fa-pepper-hot fa-lg pt-1 px-4"></i>
+                        Spice
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.spiciness(min=0, max=10, oninput="outputUpdate(value)") }}
+                        <output for="spice" id="selected-spice" class="ml-3">
+                            {{ form.spiciness.data }}
+                        </output>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div>
+                    <h5 class="theme-green-dark">
+                        What are your favourite foods for each mood?
+                    </h5>
+                    <div class="row">
+                        {% set iconStyling = 'fas fa-2x pt-1 px-4' %}
+
+                        <div class="col-md-4 bg-white" style="border-radius: 5px;">
+                            <div class="py-2 text-center theme-green-light">
+                                <i class="{{ iconStyling }} fa-smile"></i>
+                                <h6 class="pt-2">Happy</h6>
+                            </div>
+                            {{ form.mood_happy(class="form-control") }}
+                        </div>
+                        <div class="col-md-4 bg-white" style="border-radius: 5px;">
+                            <div class="py-2 text-center theme-blue">
+                                <i class="{{ iconStyling }} fa-frown"></i>
+                                <h6 class="pt-2">Sad</h6>
+                            </div>
+                            {{ form.mood_sad(class="form-control") }}
+                        </div>
+                        <div class="col-md-4 bg-white" style="border-radius: 5px;">
+                            <div class="py-2 text-center text-danger ">
+                                <i class="{{ iconStyling }} fa-angry"></i>
+                                <h6 class="pt-2">Angry</h6>
+                            </div>
+                            {{ form.mood_angry(class="form-control") }}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="text-center pt-3">
+                    {{ form.csrf_token }}
+                    {{ form.submit(class="btn btn-primary mt-3") }}
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>

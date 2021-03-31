@@ -20,7 +20,14 @@
                             {{ data[recipe].reason }}
                         </h6>
                         <p class="card-text">TODO: add recipe info here</p>
-                        <a href="#" class="card-link">I like this one!</a>
+
+                        <form action="{{ url_for('recipe') }}" method="POST">
+                            {{ form.csrf_token }}
+                            {{ form.name(value=data[recipe].name) }}
+                            {{ form.reason(value=data[recipe].reason) }}
+                            {{ form.recipeid(value=data[recipe].id) }}
+                            <input class="btn btn-success btn-sm" type="submit" value="I like this one!">
+                        </form>
                     </div>
                 </div>
             {% endfor %}

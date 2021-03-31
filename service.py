@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, redirect, render_template, session, url_for
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 import json
 import jinja2
 from markupsafe import escape
@@ -6,8 +6,10 @@ import pdb
 import pickle
 
 from user import User
+from user_history import UserHistory
 from forms.log_in import LogInForm
 from forms.preferences import PreferencesForm
+from forms.recipe_selection import RecipeSelectionForm
 from forms.recommend import RecommendForm
 from forms.sign_up import SignUpForm
 
@@ -144,6 +146,34 @@ def preferences():
     )
 
 
+@app.route('/recipe', methods=["GET", "POST"])
+def recipe():
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
+
+    if 'recipeid' not in request.values:
+        return redirect(url_for('index'))
+
+    # Save user's pick to the UserHistory table
+    print(request.values)
+    entry = UserHistory(
+        username=session['username'],
+        recipeId=request.values['recipeid'],
+        rating=2)
+
+    db.session.add(entry)
+    db.session.commit()
+
+    return render_template(
+        "recipe.html",
+        recipe=request.values,
+        template="templates/recipe.html",
+        username=session["username"],
+        logged_in=True,
+        title="Recipe"
+    )
+
+
 @app.route('/recommend', methods=["GET", "POST"])
 def recommend():
     if not session.get('logged_in'):
@@ -163,13 +193,16 @@ def recommend():
         recommender = RecommendationEngine(prefs, timeToCook)
         recommendations = recommender.get_recommendation_filters()
 
+        selection_form = RecipeSelectionForm()
+
         return render_template(
             "results.html",
             template="templates/results.html",
             username=session["username"],
             logged_in=True,
             data=recommendations,
-            title="Results"
+            title="Results",
+            form=selection_form
         )
 
     return render_template(

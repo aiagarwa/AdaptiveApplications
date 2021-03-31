@@ -163,7 +163,14 @@ def recommend():
         recommender = RecommendationEngine(prefs, timeToCook)
         recommendations = recommender.get_recommendation_filters()
 
-        return jsonify(recommendations)
+        return render_template(
+            "results.html",
+            template="templates/results.html",
+            username=session["username"],
+            logged_in=True,
+            data=recommendations,
+            title="Results"
+        )
 
     return render_template(
         "recommendations.html",

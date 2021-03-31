@@ -1,0 +1,35 @@
+{% include 'header.html' %}
+
+{% block content %}
+
+<div class="bg-prefs pt-5">
+    <div class="container">
+        <div class="page-header bg-theme-white" style="border-radius: 5px;">
+            <h1 class="theme-green-dark py-2 px-3">Here are your personalised recommendations</h1>
+        </div>
+
+        <div class="">
+
+            {% for recipe in data %}
+                <div class="card my-2">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ data[recipe].name.title() }}
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {{ data[recipe].reason }}
+                        </h6>
+                        <p class="card-text">TODO: add recipe info here</p>
+                        <a href="#" class="card-link">I like this one!</a>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% include 'footer.html' %}

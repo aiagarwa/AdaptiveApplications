@@ -1,7 +1,8 @@
 import configparser
 import pdb
 
-import food_api
+import food_api as GOALS
+import similar_users_recommendation as USERS
 
 # Stereotypes attributes are stored in an .ini file
 config = configparser.ConfigParser()
@@ -56,5 +57,27 @@ class RecommendationEngine():
 
         # TODO: add these stereotype values to the user model
         # cuisines = set(self.user.cuisines + stereotype.cuisines)
+        health_goal_rec = GOALS.generate_recommendations(self.user)
+        health_goal_rec['reason'] = self.get_reason_for_recommendation('health_goal')
 
-        return food_api.generate_recommendations(self.user)
+        similar_users_rec = USERS.main()
+        similar_users_rec['reason'] = self.get_reason_for_recommendation('similar_users')
+
+        recommendations = {
+            'health_goal': health_goal_rec,
+            'similar_users': similar_users_rec,
+        }
+
+        return recommendations
+
+
+    @staticmethod
+    def get_reason_for_recommendation(reason_key):
+        base = "We think you will like this as "
+
+        if reason_key == 'health_goal':
+            return base + 'it matches your health goal'
+        elif reason_key == 'similar_users':
+            return base + 'similiar users liked this recipe'
+
+        return base + 'TODO'

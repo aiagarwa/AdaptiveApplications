@@ -9,3 +9,4 @@ WTForms==2.3.3
 wtforms-html5==0.2.2
 Flask-SQLAlchemy==2.5.1
 psycopg2==2.8.6
+psycopg2-binary==2.8.6

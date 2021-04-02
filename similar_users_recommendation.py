@@ -89,10 +89,7 @@ def most_similar_users_(user1,number_of_users,metric='pearson'):
     user_ids = food_ratings.user_id.unique().tolist()
     
     # Getting similarity score between targeted and every other suer in the list(or subset of the list).
-    if(metric == 'pearson'):
-        similarity_score = [(pearson_correlation_score(user1,nth_user),nth_user) for nth_user in user_ids[:100] if nth_user != user1]
-    else:
-        similarity_score = [(distance_similarity_score(user1,nth_user),nth_user) for nth_user in user_ids[:100] if nth_user != user1]
+    similarity_score = [(pearson_correlation_score(user1,nth_user),nth_user) for nth_user in user_ids[:100] if nth_user != user1]
     
     # Sorting in descending order.
     similarity_score.sort()

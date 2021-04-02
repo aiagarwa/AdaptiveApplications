@@ -1,13 +1,12 @@
 {% include 'header.html' %}
 
 {% block content %}
-<div class="container mt-5">
-<div class="form-wrapper">
-    <h2 class="title mb-4">Log In</h2>
+<div class="bg-img img-salad">
+    <form class="form side-form container-form container-form-left vertical-center py-5" method="POST" action="{{ url_for('login') }}">
 
-    <form class="form" method="POST" action="{{ url_for('login') }}">
+        <h1 class="pl-3">Log In</h1>
 
-        <div class="form-group row">
+        <div class="form-group row mt-5">
 
             <div class="col-xs-1">
                 <label for="userNames" class="col-sm-2 col-form-label">
@@ -15,7 +14,7 @@
                 </label>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6">
 
                 {{ form.username(class="form-control", placeholder="Username", required=True) }}
 
@@ -36,7 +35,7 @@
                 </label>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6">
                 {{ form.password(class="form-control", placeholder="Enter password", type="password", required=True) }}
 
                 {% if form.password.errors %}
@@ -51,7 +50,7 @@
 
         <div class="pl-4">
             {{ form.csrf_token }}
-            {{ form.submit(class="btn btn-primary btn-sm mt-3") }}
+            {{ form.submit(class="btn btn-primary mt-3") }}
         </div>
 
     </form>

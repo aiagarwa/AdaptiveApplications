@@ -1,40 +1,63 @@
-.green-text {
-    color: #80ff00;
-}
-
-.green-background {
-    /*background-color: #008000;*/
-    background-color: #80ff00;
-}
-
 .bg {
   background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("background_plates.jpg");
   height: 50%;
 
-  /* Center and scale the image nicely */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
 }
 
-.bg-prefs {
-  background-image: url("background_plates.jpg");
+.bg-img {
   height: 100%;
-
-  /* Center and scale the image nicely */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
 }
 
-.prefs-content {
-    margin-top: 0px;
-    padding-top: 25px;
-    padding-bottom: 25px;
-    width: 100%;
-    padding: 20px;
+.side-form {
+  padding: 16px;
+  background-color: white;
+  border-radius: 5px;
+  width: 35%;
+}
+
+.container-form {
+  background: rgba(255, 250, 240, 0.9);
+  border-radius: 10px;
+}
+
+.img-salad {
+  background-image: url("pexels-ella-olsson-1640777.jpg");
+}
+
+.img-toast {
+  background-image: url("pexels-anthony-shkraba-5589043.jpg");
+}
+
+.img-matcha {
+  background-image: url("pexels-pixabay-461428.jpg");
+}
+
+.img-plates {
+  background-image: url("background_plates.jpg");
+}
+
+.container-form-left {
+  margin-left: 100px;
+}
+
+.container-form-right {
+  right: 0;
+  margin-right: 100px;
+}
+
+.vertical-center {
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 
 .theme-white {

@@ -16,7 +16,7 @@
                         Cuisines
                     </div>
                     <div class="col-md-6">
-                        {{ form.cuisines(class="form-control", selected=prefs.cuisines) }}
+                        {{ form.cuisines(class="form-control") }}
                     </div>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                 Spice
             </div>
             <div class="col-md-3">
-                {{ form.spiciness(min=0, max=10, oninput="outputUpdate(value), value=prefs.spiciness") }}
+                {{ form.spiciness(min=0, max=10, oninput="outputUpdate(value)") }}
                 <output for="spice" id="selected-spice" class="ml-3">
                     {{ form.spiciness.data }}
                 </output>

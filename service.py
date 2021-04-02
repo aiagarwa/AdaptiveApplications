@@ -136,10 +136,20 @@ def preferences():
 
         return redirect(url_for('index'))
 
+    # Pre-select user's current preferences
+    form.cuisines.default = prefs.cuisines
+    form.allergies.default = prefs.allergies
+    form.spiciness.default = prefs.spiciness
+    form.mood_happy.default = prefs.mood_happy
+    form.mood_sad.default = prefs.mood_sad
+    form.mood_angry.default = prefs.mood_angry
+    form.process()
+
     return render_template(
         "preferences.html",
         form=form,
         template="templates/preferences.html",
+        prefs=prefs,
         username=session["username"],
         logged_in=True,
         title="Preferences"
@@ -156,6 +166,9 @@ def recipe():
 
     # Save user's pick to the UserHistory table
     print(request.values)
+
+    # Do we want to have the user provide a numerical rating?
+    # Would that make it seem less "adaptive"?
     entry = UserHistory(
         username=session['username'],
         recipeId=request.values['recipeid'],

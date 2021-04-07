@@ -25,4 +25,10 @@ class RecipeSelectionForm(FlaskForm):
     name = HiddenField(
         'Name',
     )
+    weather = HiddenField(
+        'Weather',
+    )
+    mood = HiddenField(
+        'Mood',
+    )
     submit = SubmitField('Submit')

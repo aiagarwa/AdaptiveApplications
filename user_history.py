@@ -8,10 +8,14 @@ class UserHistory(db.Model):
     username = db.Column(db.String(80))
     recipeId = db.Column(db.Integer)
     rating = db.Column(db.Integer)
+    mood = db.Column(db.String(80))
+    weather = db.Column(db.String(80))
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, username, recipeId, rating):
+    def __init__(self, username, recipeId, rating, mood, weather):
         self.username = username
         self.recipeId = recipeId
         self.rating = rating
+        self.mood = mood
+        self.weather = weather
 

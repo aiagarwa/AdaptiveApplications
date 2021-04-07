@@ -172,6 +172,8 @@ def recipe():
     entry = UserHistory(
         username=session['username'],
         recipeId=request.values['recipeid'],
+        mood=request.values['mood'],
+        weather=request.values['weather'],
         rating=2)
 
     db.session.add(entry)
@@ -202,6 +204,7 @@ def recommend():
         prefs.time_to_cook = timeToCook
 
         prefs.current_mood = form.mood.data
+        prefs.current_weather = form.weather.data
 
         recommender = RecommendationEngine(prefs, timeToCook)
         recommendations = recommender.get_recommendation_filters()
@@ -214,6 +217,8 @@ def recommend():
             username=session["username"],
             logged_in=True,
             data=recommendations,
+            mood=form.mood.data,
+            weather=form.weather.data,
             title="Results",
             form=selection_form
         )

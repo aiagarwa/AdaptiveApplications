@@ -40,4 +40,13 @@ class RecommendForm(FlaskForm):
             ('angry', 'angry'),
         ],
     )
+    weather = SelectField(
+        'Weather',
+        [DataRequired()],
+        choices=[
+            ('sunny', 'sunny'),
+            ('rainy', 'rainy'),
+            ('cold', 'cold'),
+        ],
+    )
     submit = SubmitField('Submit')

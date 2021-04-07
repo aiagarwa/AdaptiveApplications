@@ -4,6 +4,7 @@ import jinja2
 from markupsafe import escape
 import pdb
 import pickle
+import random
 
 from user import User
 from user_history import UserHistory
@@ -284,6 +285,30 @@ def get_user_histories():
         result.append(data)
 
     return jsonify(result)
+
+
+@app.route('/dummy_history')
+def create_dummy_histories():
+    mood = ['angry', 'happy', 'sad']
+    weather = ['cold', 'rainy', 'sunny']
+
+    results = []
+    num_samples = 25
+    for x in range(num_samples):
+        entry = UserHistory(
+            mood=random.choice(mood),
+            weather=random.choice(weather),
+            rating=random.randrange(10),
+            recipe_id=random.randrange(100),
+            user_id=random.randrange(1,3),
+            username='test')
+
+        results.append(entry)
+
+    db.session.add_all(results)
+    db.session.commit()
+
+    return jsonify('Created %s dummy user histories' % len(results))
 
 
 @app.before_first_request

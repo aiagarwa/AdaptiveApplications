@@ -2,9 +2,11 @@ from flask import Flask, jsonify, redirect, render_template, request, session, u
 import json
 import jinja2
 from markupsafe import escape
+import pandas as pd
 import pdb
 import pickle
 import random
+from sqlalchemy import func
 
 from user import User
 from user_history import UserHistory
@@ -283,6 +285,12 @@ def get_user_histories():
         data = vars(entry)
         data.pop('_sa_instance_state', None)
         result.append(data)
+
+    groupings = UserHistory.query.with_entities(UserHistory.recipeId, UserHistory.mood, UserHistory.weather, func.count(UserHistory.historyId)).group_by(UserHistory.recipeId, UserHistory.mood, UserHistory.weather).all()
+
+    df = pd.DataFrame(groupings, columns=['recipe_id', 'mood', 'weather', 'count'])
+
+    print(df)
 
     return jsonify(result)
 

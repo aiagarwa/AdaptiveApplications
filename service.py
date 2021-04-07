@@ -61,6 +61,7 @@ def login():
             if data is not None:
                 # Set user's session variables
                 session['logged_in'] = True
+                session["user_id"] = data.id
                 session["username"] = form.username.data
                 session["preferences"] = pickle.dumps(data.preferences)
 
@@ -82,7 +83,7 @@ def login():
     )
 
 
-@app.route('/signup', methods=["GET", "POST"])
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if session.get('logged_in'):
         return redirect(url_for('index'))
@@ -96,19 +97,20 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
+        session['user_id'] = new_user.id
         session['logged_in'] = True
         session['username'] = form.username.data
-        session["preferences"] = pickle.dumps(new_user.preferences)
+        session['preferences'] = pickle.dumps(new_user.preferences)
 
         return redirect(url_for('preferences'))
 
     return render_template(
-        "sign_up.html",
+        'sign_up.html',
         form=form,
-        template="templates/sign_up.html",
+        template='templates/sign_up.html',
         username=None,
         logged_in=False,
-        title="Sign Up"
+        title='Sign Up'
     )
 
 
@@ -140,9 +142,9 @@ def preferences():
     form.cuisines.default = prefs.cuisines
     form.allergies.default = prefs.allergies
     form.spiciness.default = prefs.spiciness
-    form.mood_happy.default = prefs.mood_happy
-    form.mood_sad.default = prefs.mood_sad
-    form.mood_angry.default = prefs.mood_angry
+    form.happy_foods.default = prefs.happy_foods
+    form.sad_foods.default = prefs.sad_foods
+    form.angry_foods.default = prefs.angry_foods
     form.process()
 
     return render_template(
@@ -170,8 +172,9 @@ def recipe():
     # Do we want to have the user provide a numerical rating?
     # Would that make it seem less "adaptive"?
     entry = UserHistory(
+        user_id=session['user_id'],
         username=session['username'],
-        recipeId=request.values['recipeid'],
+        recipe_id=request.values['recipeid'],
         mood=request.values['mood'],
         weather=request.values['weather'],
         rating=2)
@@ -268,6 +271,20 @@ def queryuser():
     for user in users:
         ans += user.userName + " -- "
     return ans
+
+
+@app.route('/history')
+def get_user_histories():
+    history = UserHistory.query.all()
+
+    result = []
+    for entry in history:
+        data = vars(entry)
+        data.pop('_sa_instance_state', None)
+        result.append(data)
+
+    return jsonify(result)
+
 
 @app.before_first_request
 def initdb():

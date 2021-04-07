@@ -41,17 +41,17 @@ class PreferencesForm(FlaskForm):
     )
 
     # Mood inputs
-    mood_happy = SelectMultipleField(
+    happy_foods = SelectMultipleField(
         'Happy',
         [DataRequired()],
         choices=cuisines_prepped,
     )
-    mood_sad = SelectMultipleField(
+    sad_foods = SelectMultipleField(
         'Sad',
         [DataRequired()],
         choices=cuisines_prepped,
     )
-    mood_angry = SelectMultipleField(
+    angry_foods = SelectMultipleField(
         'Angry',
         [DataRequired()],
         choices=cuisines_prepped,

@@ -193,9 +193,15 @@ def recipe():
     recipe['ingredients'] = ast.literal_eval(recipe['ingredients'])
     recipe['steps'] = ast.literal_eval(recipe['steps'])
 
+    # Get similar recipes
+    prefs = pickle.loads(session["preferences"])
+    recommender = RecommendationEngine(prefs, 30)
+    similar_recipes = recommender.get_recommendation_filters()
+
     return render_template(
         "recipe.html",
         recipe=recipe,
+        similar_recipes=similar_recipes,
         template="templates/recipe.html",
         username=session["username"],
         logged_in=True,

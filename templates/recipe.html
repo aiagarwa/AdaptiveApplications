@@ -66,6 +66,31 @@
             </div>
         </div>
 
+        <div class="mt-5">
+            <h3 class="title mb-3">Similar Recipes</h3>
+
+            <div class="grid grid-cols-3 gap-4">
+                {% for recipe in similar_recipes['recommendation_type_1'] %}
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ recipe.name.title() }}
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <i class="fas fa-tags mr-1"></i>
+                                <b>{{recipe.cuisines.title()}}</b> &nbsp;
+                                <b>{{recipe.minutes}}</b> mins &nbsp;
+                                <b>{{recipe.n_steps}}</b> steps
+                            </h6>
+                            <p class="card-text">
+                                {{ recipe.description.capitalize() | truncate(150) }} ...
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+        </div>
+
     </div>
 </div>
 

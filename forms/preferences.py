@@ -10,9 +10,17 @@ from wtforms.validators import (
     Length,
 )
 
+# Turkey has turkey in it - not Turkish?
+cuisines = ["indian", "japanese", "spanish", "english", "mexican", "italian", "chinese", "greek", "french", "african", "thai"]
 
 class PreferencesForm(FlaskForm):
     """ Food preferences form """
+
+    # Create cuisine tuples (LHS = key, RHS = label)
+    cuisines_prepped = []
+    for c in cuisines:
+        cuisines_prepped.append((c, c.title()))
+
 
     allergies = SelectMultipleField(
         'Allergies',
@@ -25,14 +33,28 @@ class PreferencesForm(FlaskForm):
     cuisines = SelectMultipleField(
         'Cuisines',
         [DataRequired()],
-        choices=[
-            ('burgers', 'Burgers'),
-            ('indian', 'Indian'),
-            ('italian', 'Italian'),
-        ],
+        choices=cuisines_prepped,
     )
-    spicyness = IntegerRangeField(
-        'Spicyness',
+    spiciness = IntegerRangeField(
+        'Spiciness',
         default=5,
     )
+
+    # Mood inputs
+    happy_foods = SelectMultipleField(
+        'Happy',
+        [DataRequired()],
+        choices=cuisines_prepped,
+    )
+    sad_foods = SelectMultipleField(
+        'Sad',
+        [DataRequired()],
+        choices=cuisines_prepped,
+    )
+    angry_foods = SelectMultipleField(
+        'Angry',
+        [DataRequired()],
+        choices=cuisines_prepped,
+    )
+
     submit = SubmitField('Submit')

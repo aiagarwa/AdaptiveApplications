@@ -1,0 +1,99 @@
+{% include 'header.html' %}
+
+{% block content %}
+
+<div class="bg-img img-salad pt-5">
+
+    <div class="container container-form p-5">
+
+        <h2 class="title mb-4">{{ recipe.name.title() }}</h2>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ recipe.name.title() }}
+                </h5>
+                <h6 class="card-subtitle mb-4 text-muted">
+                    <b>{{ recipe.cuisines}}</b> &nbsp;
+                    <b>{{ recipe.minutes}}</b> mins &nbsp;
+                    <b>{{ recipe.n_steps}}</b> steps &nbsp;
+                    <b>{{ recipe.n_ingredients}}</b> ingredients &nbsp;
+                </h6>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div id="nutritional_info">
+                        <p class="theme-green-light">
+                            <i class="fas fa-seedling mr-3"></i>
+                            Nutritional Info
+                        </p>
+
+                        <p class="card-text">
+                            <ul class="pl-3 list-disc">
+                                <li>Calories: {{ recipe.calories}}</li>
+                                <li>Protein: {{ recipe.protein}}</li>
+                                <li>Saturated fat: {{ recipe.saturated_fat}}</li>
+                                <li>Sodium: {{ recipe.sodium}}</li>
+                                <li>Sugar: {{ recipe.sugar}}</li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div id="ingredients">
+                        <p class="theme-green-light">
+                            <i class="fas fa-apple-alt mr-3"></i>
+                            Ingredients
+                        </p>
+
+                        <ol class="pl-3 list-decimal">
+                            {% for i in recipe.ingredients %}
+                                <li>{{i}}</li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                    <div id="step">
+                        <p class="theme-green-light">
+                            <i class="fas fa-list-ol mr-3"></i>
+                            Steps
+                        </p>
+
+                        <ol class="pl-3 list-decimal">
+                            {% for step in recipe.steps %}
+                                <li>{{step}}</li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <h3 class="title mb-3">Similar Recipes</h3>
+
+            <div class="grid grid-cols-3 gap-4">
+                {% for recipe in similar_recipes['recommendation_type_1'] %}
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ recipe.name.title() }}
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <i class="fas fa-tags mr-1"></i>
+                                <b>{{recipe.cuisines.title()}}</b> &nbsp;
+                                <b>{{recipe.minutes}}</b> mins &nbsp;
+                                <b>{{recipe.n_steps}}</b> steps
+                            </h6>
+                            <p class="card-text">
+                                {{ recipe.description.capitalize() | truncate(150) }} ...
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% include 'footer.html' %}

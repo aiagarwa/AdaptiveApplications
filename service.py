@@ -1,10 +1,20 @@
-from flask import Flask, jsonify, redirect, render_template, url_for
+import ast
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+import json
 import jinja2
 from markupsafe import escape
+import pandas as pd
 import pdb
+import pickle
+import random
+from sqlalchemy import func
 
 from user import User
+from user_history import UserHistory
+from forms.log_in import LogInForm
 from forms.preferences import PreferencesForm
+from forms.recipe_selection import RecipeSelectionForm
+from forms.recommend import RecommendForm
 from forms.sign_up import SignUpForm
 
 from recommendation_engine import RecommendationEngine
@@ -25,64 +35,234 @@ db.init_app(app)
 
 @app.route('/')
 def index():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     templateLoader = jinja2.FileSystemLoader(searchpath="./")
     templateEnv = jinja2.Environment(loader=templateLoader)
 
-    user = User(name='John', age=36)
-
     TEMPLATE_FILE = "templates/home.html"
     template = templateEnv.get_template(TEMPLATE_FILE)
-    outputText = template.render(title='Home', user=user)
+    return template.render(
+        title='Home',
+        username=session["username"])
 
-    return outputText
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return 'login'
+    """Login Form"""
+    if session.get('logged_in'):
+        return redirect(url_for('index'))
 
-@app.route('/signup', methods=["GET", "POST"])
-def signup():
-    form = SignUpForm()
-
+    form = LogInForm()
     if form.validate_on_submit():
-        return "ok"
+        print("attempting to log in")
+        name = form.username.data
+        password = form.password.data
+        try:
+            # data = User.query.filter_by(username=name, password=password).first()
+            data = User.query.filter_by(userName=name).first()
+            if data is not None:
+                # Set user's session variables
+                session['logged_in'] = True
+                session["user_id"] = data.id
+                session["username"] = form.username.data
+                session["preferences"] = pickle.dumps(data.preferences)
+
+                return redirect(url_for('index'))
+            else:
+                print("don't log user in")
+                return 'Dont Login'
+        except:
+            print("Error occurred - don't log user in")
+            return "Dont Login"
 
     return render_template(
-        "sign_up.html",
+        "log_in.html",
         form=form,
-        template="templates/sign_up.html",
-        user=None,
-        title="Sign Up"
+        template="templates/log_in.html",
+        username=None,
+        logged_in=False,
+        title="Log In"
     )
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if session.get('logged_in'):
+        return redirect(url_for('index'))
+
+    form = SignUpForm()
+    if form.validate_on_submit():
+        new_user = User(
+            username=form.username.data,
+            password=form.password.data)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        session['user_id'] = new_user.id
+        session['logged_in'] = True
+        session['username'] = form.username.data
+        session['preferences'] = pickle.dumps(new_user.preferences)
+
+        return redirect(url_for('preferences'))
+
+    return render_template(
+        'sign_up.html',
+        form=form,
+        template='templates/sign_up.html',
+        username=None,
+        logged_in=False,
+        title='Sign Up'
+    )
+
 
 @app.route('/preferences', methods=["GET", "POST"])
 def preferences():
-    form = PreferencesForm()
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
 
+    # Get user preferences
+    prefs = pickle.loads(session["preferences"])
+
+    form = PreferencesForm()
     if form.validate_on_submit():
-        return "ok"
+        # Get form values and update user preferences
+        data = form.data
+        prefs.update(data)
+
+        # Update user preferences in the database
+        user = User.query.filter_by(userName=session["username"]).first()
+        user.preferences = prefs
+        db.session.commit()
+
+        # Update user preferences in the session
+        session["preferences"] = pickle.dumps(prefs)
+
+        return redirect(url_for('index'))
+
+    # Pre-select user's current preferences
+    form.cuisines.default = prefs.cuisines
+    form.allergies.default = prefs.allergies
+    form.spiciness.default = prefs.spiciness
+    form.happy_foods.default = prefs.happy_foods
+    form.sad_foods.default = prefs.sad_foods
+    form.angry_foods.default = prefs.angry_foods
+    form.process()
 
     return render_template(
         "preferences.html",
         form=form,
         template="templates/preferences.html",
-        user=None,
+        prefs=prefs,
+        username=session["username"],
+        logged_in=True,
         title="Preferences"
     )
 
-@app.route('/recommend')
+
+@app.route('/recipe', methods=["GET", "POST"])
+def recipe():
+    if not session.get('logged_in'):
+        return redirect(url_for('index'))
+
+    if 'recipeid' not in request.values:
+        return redirect(url_for('index'))
+
+    # Save user's pick to the UserHistory table
+    print(request.values)
+
+    # Do we want to have the user provide a numerical rating?
+    # Would that make it seem less "adaptive"?
+    entry = UserHistory(
+        user_id=session['user_id'],
+        username=session['username'],
+        recipe_id=request.values['recipeid'],
+        mood=request.values['mood'],
+        weather=request.values['weather'],
+        rating=2)
+
+    db.session.add(entry)
+    db.session.commit()
+
+    # Convert string of dict to dict
+    recipe = ast.literal_eval(request.values['recipe'])
+
+    # Convert string of list to list
+    recipe['ingredients'] = ast.literal_eval(recipe['ingredients'])
+    recipe['steps'] = ast.literal_eval(recipe['steps'])
+
+    # Get similar recipes
+    prefs = pickle.loads(session["preferences"])
+    recommender = RecommendationEngine(prefs, 30)
+    similar_recipes = recommender.get_recommendation_filters()
+
+    return render_template(
+        "recipe.html",
+        recipe=recipe,
+        similar_recipes=similar_recipes,
+        template="templates/recipe.html",
+        username=session["username"],
+        logged_in=True,
+        title="Recipe"
+    )
+
+
+@app.route('/recommend', methods=["GET", "POST"])
 def recommend():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
 
-    user = User()
-    user.allergies = ["celery"]
-    user.time_to_cook = 30
+    prefs = pickle.loads(session["preferences"])
 
-    recommender = RecommendationEngine(user)
-    recommendations = recommender.get_recommendation_filters()
+    form = RecommendForm()
+    if form.validate_on_submit():
+        prefs.health_goals = form.healthGoals.data
+        prefs.level_of_activity = form.levelOfActivity.data
+        timeToCook = form.timeToCook.data
+        prefs.time_to_cook = timeToCook
 
-    # TODO: create a Jinja2 template for showing responses
-    # (not just turning a JSON object)
-    return jsonify(recommendations)
+        prefs.current_mood = form.mood.data
+        prefs.current_weather = form.weather.data
+
+        recommender = RecommendationEngine(prefs, timeToCook)
+        recommendations = recommender.get_recommendation_filters()
+
+        selection_form = RecipeSelectionForm()
+
+        return render_template(
+            "results.html",
+            template="templates/results.html",
+            username=session["username"],
+            logged_in=True,
+            data=recommendations,
+            mood=form.mood.data,
+            weather=form.weather.data,
+            title="Results",
+            form=selection_form
+        )
+
+    return render_template(
+        "recommendations.html",
+        form=form,
+        template="templates/recommendations.html",
+        username=session["username"],
+        logged_in=True,
+        title="Recommendation"
+    )
+
+
+@app.route('/sign_out')
+def sign_out():
+    session.clear()
+
+    return redirect(url_for('login'))
+
+
+@app.route('/drop')
+def dropdb():
+    db.drop_all()
 
 
 # For user
@@ -108,6 +288,50 @@ def queryuser():
     for user in users:
         ans += user.userName + " -- "
     return ans
+
+
+@app.route('/history')
+def get_user_histories():
+    history = UserHistory.query.all()
+
+    result = []
+    for entry in history:
+        data = vars(entry)
+        data.pop('_sa_instance_state', None)
+        result.append(data)
+
+    groupings = UserHistory.query.with_entities(UserHistory.recipeId, UserHistory.mood, UserHistory.weather, func.count(UserHistory.historyId)).group_by(UserHistory.recipeId, UserHistory.mood, UserHistory.weather).all()
+
+    df = pd.DataFrame(groupings, columns=['recipe_id', 'mood', 'weather', 'count'])
+
+    print(df)
+
+    return jsonify(result)
+
+
+@app.route('/dummy_history')
+def create_dummy_histories():
+    mood = ['angry', 'happy', 'sad']
+    weather = ['cold', 'rainy', 'sunny']
+
+    results = []
+    num_samples = 25
+    for x in range(num_samples):
+        entry = UserHistory(
+            mood=random.choice(mood),
+            weather=random.choice(weather),
+            rating=random.randrange(10),
+            recipe_id=random.randrange(100),
+            user_id=random.randrange(1,3),
+            username='test')
+
+        results.append(entry)
+
+    db.session.add_all(results)
+    db.session.commit()
+
+    return jsonify('Created %s dummy user histories' % len(results))
+
 
 @app.before_first_request
 def initdb():

@@ -1,7 +1,31 @@
 {% include 'templates/header.html' %}
 
-<div class="page-header">
-    <h1 class="text-green">Welcome {{ user.name }}!</h1>
-</div>
+<main role="main">
+
+    <div class="jumbotron jumbotron-fluid bg">
+        <div class="home-header-text">
+            <h1 class="display-3">Welcome, {{ username }}!</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 offset-md-1 bg-theme-white py-3 px-4 mr-4" style="border-radius: 5px;">
+                <h2 class="theme-green-light">Set Your Preferences</h2>
+                <p>
+                    Tell us about your food preferences - spiciness, cuisines, allergies...
+                </p>
+                <p>
+                    <a class="btn btn-secondary" href="/preferences" role="button">Preferences &raquo;</a>
+                </p>
+            </div>
+            <div class="col-md-5 bg-theme-white py-3 px-4 ml-4" style="border-radius: 5px;">
+                <h2 class="theme-green-light">Get a Recommendation</h2>
+                <p>Get a personalised meal recommendation...</p>
+                <p><a class="btn btn-secondary" href="/recommend" role="button">Recommend &raquo;</a></p>
+            </div>
+    </div>
+
+</main>
 
 {% include 'templates/footer.html' %}

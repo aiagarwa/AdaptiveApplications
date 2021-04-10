@@ -1,0 +1,53 @@
+{% include 'header.html' %}
+
+{% block content %}
+
+<div class="bg-img img-salad pt-5">
+    <div class="container container-form p-5">
+        <h2 class="title">Here are your personalised recommendations</h2>
+
+            {% for recommendation in data %}
+                <h4 class="mt-4">
+                    These recommendations are based on <i>{{ recommendation }}</i>
+                </h4>
+
+                <div class="grid grid-cols-3 gap-4">
+                {% for recipe in data[recommendation] %}
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ recipe.name.title() }}
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <i class="fas fa-tags mr-1"></i>
+                                <b>{{recipe.cuisines.title()}}</b> &nbsp;
+                                <b>{{recipe.minutes}}</b> mins &nbsp;
+                                <b>{{recipe.n_steps}}</b> steps
+                            </h6>
+                            <p class="card-text">
+                                {{ recipe.description.capitalize() | truncate(150) }} ...
+                            </p>
+
+                            <form action="{{ url_for('recipe') }}" method="POST">
+                                {{ form.csrf_token }}
+                                {{ form.name(value=recipe.name) }}
+                                {{ form.reason(value=recipe.recommendation) }}
+                                {{ form.recipeid(value=recipe.id) }}
+                                {{ form.weather(value=weather) }}
+                                {{ form.recipe(value=recipe) }}
+                                {{ form.mood(value=mood) }}
+                                <input class="btn btn-success btn-sm" type="submit" value="I like this one!">
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+
+            {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% include 'footer.html' %}

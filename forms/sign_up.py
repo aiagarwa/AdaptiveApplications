@@ -16,20 +16,9 @@ from wtforms.validators import (
 class SignUpForm(FlaskForm):
     """ Sign up for a user account """
 
-    firstName = StringField(
-        'First Name',
+    username = StringField(
+        'Username',
         [DataRequired()]
-    )
-    lastName = StringField(
-        'Last Name',
-        [DataRequired()]
-    )
-    email = StringField(
-        'Email',
-        [
-            # Email(message='Not a valid email address.'),
-            DataRequired()
-        ]
     )
     password = PasswordField(
         'Password',

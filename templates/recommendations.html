@@ -1,0 +1,83 @@
+{% include 'header.html' %}
+
+{% block content %}
+<div class="bg-img img-salad pt-5">
+
+    <form class="form container container-form p-5" method="POST" action="{{ url_for('recommend') }}">
+
+        <h2 class="title mb-4">Recommendations</h2>
+
+        <div class="form-group row my-5">
+            <div class="col-md-3">
+                <i class="fas fa-heartbeat fa-lg pt-1 px-4"></i>
+                Health Goals
+            </div>
+            <div class="col-md-4">
+                {{ form.healthGoals(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-group row my-5">
+            <div class="col-md-3">
+                <i class="fas fa-running fa-lg pt-1 px-4"></i>
+                Level of Activity
+            </div>
+            <div class="col-md-3">
+                {{ form.levelOfActivity(min=0, max=10, oninput="outputUpdate(value)") }}
+                <output for="activity" id="selected-level" class="ml-3">
+                    {{ form.levelOfActivity.data }}
+                </output>
+            </div>
+        </div>
+
+        <div class="form-group row my-5">
+            <div class="col-md-3">
+                <i class="fas fa-clock fa-lg pt-1 px-4"></i>
+                Time to Cook
+            </div>
+            <div class="col-md-4">
+                {{ form.timeToCook(min=15, max=90, step=5, oninput="updateTimeSlider(value)") }}
+                <output for="time" id="selected-time" class="ml-3">
+                    {{ form.timeToCook.data }} mins
+                </output>
+            </div>
+        </div>
+
+        <div class="form-group row my-5">
+            <div class="col-md-3">
+                <i class="fas fa-smile fa-lg pt-1 px-4"></i>
+                Mood
+            </div>
+            <div class="col-md-4">
+                {{ form.mood(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-group row my-5">
+            <div class="col-md-3">
+                <i class="fas fa-cloud-sun-rain fa-lg pt-1 px-4"></i>
+                Weather
+            </div>
+            <div class="col-md-4">
+                {{ form.weather(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="text-center pt-3">
+            {{ form.csrf_token }}
+            {{ form.submit(class="btn btn-primary mt-3") }}
+        </div>
+
+    </form>
+</div>
+
+<script>
+function outputUpdate(level) {
+    document.querySelector('#selected-level').value = level;
+}
+function updateTimeSlider(level) {
+    document.querySelector('#selected-time').value = level + ' mins';
+}
+</script>
+
+{% endblock %}

@@ -31,4 +31,7 @@ class RecipeSelectionForm(FlaskForm):
     mood = HiddenField(
         'Mood',
     )
+    recipe = HiddenField(
+        'Recipe',
+    )
     submit = SubmitField('Submit')

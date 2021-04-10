@@ -1,3 +1,4 @@
+import ast
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 import json
 import jinja2
@@ -185,9 +186,16 @@ def recipe():
     db.session.add(entry)
     db.session.commit()
 
+    # Convert string of dict to dict
+    recipe = ast.literal_eval(request.values['recipe'])
+
+    # Convert string of list to list
+    recipe['ingredients'] = ast.literal_eval(recipe['ingredients'])
+    recipe['steps'] = ast.literal_eval(recipe['steps'])
+
     return render_template(
         "recipe.html",
-        recipe=request.values,
+        recipe=recipe,
         template="templates/recipe.html",
         username=session["username"],
         logged_in=True,

@@ -178,11 +178,15 @@ def get_recommendation(user_id,food_ratings,feature="rating",max_neighbors=10, t
 """Method to filter the recipes according to filtering conditions"""
 
 def filter_top_recipes(pred_ratings_feature, filtering=[]):
+  filterRecipes = recipes;
   if len(filtering) == 0:
     return pred_ratings_feature
   for f in filtering:
     if f == "vegetarian":
-      filterRecipes = recipes[recipes["vegetarian"] == 1]
+      filterRecipes = filterRecipes[filterRecipes["vegetarian"] == 1]
+    elif f.startswith("cooking_time_less_than"):
+      mins = int(f.split("_")[-1])
+      filterRecipes = filterRecipes[filterRecipes["minutes"] <= mins]
   return pred_ratings_feature[pred_ratings_feature.recipe_id.isin(filterRecipes.id.values)]
 
 """Method to get the list of ratings of top 5 recipes in each feature for all the features """
@@ -299,6 +303,6 @@ def evaluate(usrItemMat,similarity):
   # actual=np.nan_to_num(actual)
 
 # Example
-combined_rec=get_all_recommendations(491979,"sunny","happy", filtering=["vegetarian"])
+combined_rec=get_all_recommendations(491979,"sunny","happy", filtering=["vegetarian", "cooking_time_less_than_30"])
 
 combined_rec

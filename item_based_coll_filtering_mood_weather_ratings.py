@@ -19,6 +19,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import mean_squared_error
 from math import pow, sqrt
 import sys
+import data_processing
 
 """Mounting the drive to access the other files"""
 
@@ -66,7 +67,7 @@ def get_user_item_matrix(data,feature):
   rating_crosstab = food_ratings.pivot_table(values=feature, index='user_id', columns='recipe_id', fill_value=0)
   return rating_crosstab
 
-"""Get Similarity Matrix using cosine distance """
+"""Get Item Similarity Matrix using cosine distance """
 
 def get_similarity_matrix(usrItmMat):
   # rating_crosstab = food_ratings.pivot_table(values=feature, index='user_id', columns='recipe_id', fill_value=0)
@@ -78,12 +79,32 @@ def get_similarity_matrix(usrItmMat):
   item_sim_df = pd.DataFrame(cosine_similarity(pivot_norm), index=pivot_norm.index, columns=pivot_norm.index)
   return item_sim_df, pivot_norm
 
-"""Method to get the similar recipes based on other recipe """
+"""Get User Similarity Matrix using cosine distance """
+
+def get_similarity_matrix_user(usrItmMat):
+  # rating_crosstab = food_ratings.pivot_table(values=feature, index='user_id', columns='recipe_id', fill_value=0)
+  X = usrItmMat
+  X = X.replace(['0', 0], np.nan)
+  # pivot = X
+  pivot_norm = X.apply(lambda x: x+np.nanmean(x), axis=1)
+  pivot_norm.fillna(0, inplace=True)
+  user_sim_df = pd.DataFrame(cosine_similarity(pivot_norm), index=pivot_norm.index, columns=pivot_norm.index)
+  return user_sim_df, pivot_norm
+
+"""Method to get the similar recipes based on ratings of other recipe """
 
 def get_similar_recipe(recipe_id,similarity,usrItmMat):
     Recommendations = pd.DataFrame({'corr_specific':similarity[recipe_id].values, 'Recipe_Id': usrItmMat.columns})\
                         .sort_values('corr_specific', ascending=False)
     return Recommendations['Recipe_Id'][1:].values, Recommendations['corr_specific'].values[1:]
+
+"""Method to get the similar users based on ratings of recipes"""
+
+def get_similar_users(user_id,similarity,usrItmMat):
+    Recommendations = pd.DataFrame({'corr_specific':similarity[user_id].values, 'User_Id': usrItmMat.T.columns})\
+                        .sort_values('corr_specific', ascending=False)
+    # return Recommendations['Recipe_Id'][1:].values, Recommendations['corr_specific'].values[1:] 
+    return Recommendations['User_Id'][1:].values, Recommendations['corr_specific'][1:].values
 
 """Get the predictions of ratings for all recipes for all users"""
 
@@ -105,22 +126,42 @@ def predict_rating(user_id, recipe_id, similarity, usrItmMat, normalized_usrItmM
     s = np.nan_to_num(s)
     return s
 
+# predict the rating of recipe x based on similar users
+def predict_rating_user(user_id, recipe_id, similarity, usrItmMat, normalized_usrItmMat, max_neighbor=10):
+    users, scores = get_similar_users(user_id,similarity,usrItmMat)
+    user_arr = np.array([x for x in users])
+    sim_arr = np.array([x for x in scores])
+    if normalized_usrItmMat.T[user_id].loc[recipe_id] != 0 and np.sum(usrItmMat[recipe_id].loc[user_arr[:max_neighbor]]) !=0:
+      mean_rat=normalized_usrItmMat.T[user_id].mean()
+      s = mean_rat+np.dot(sim_arr[:max_neighbor],(usrItmMat[recipe_id].loc[user_arr[:max_neighbor]]-usrItmMat.loc[user_arr[:max_neighbor]].mean(axis=1))) \
+                    /np.sum(usrItmMat[recipe_id].loc[user_arr[:max_neighbor]])
+      # print(s)
+      return s
+    else:
+      return 0
+
 """Get the recommendations of similar food items based on different features"""
 
-def get_recommendation(user_id,food_ratings,feature="rating",n_recipe=10):
+def get_recommendation(user_id,food_ratings,feature="rating",max_neighbors=10, type="item"):
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     
     usrItmMat = get_user_item_matrix(food_ratings,feature)
-    sim_Mat, normalized_usrItmMat = get_similarity_matrix(usrItmMat)
     # return sim_Mat
 
     rids = food_ratings.recipe_id.unique().tolist()
 
     predicted_rating = {}
     
-    for _recipe in rids:
-        rating = predict_rating(user_id, _recipe, sim_Mat, usrItmMat, normalized_usrItmMat)
-        predicted_rating[_recipe] = rating
+    if type=="user":    
+      sim_Mat, normalized_usrItmMat = get_similarity_matrix_user(usrItmMat)
+      for _recipe in rids:
+          rating = predict_rating_user(user_id, _recipe, sim_Mat, usrItmMat, normalized_usrItmMat)
+          predicted_rating[_recipe] = rating
+    else:
+      sim_Mat, normalized_usrItmMat = get_similarity_matrix(usrItmMat)
+      for _recipe in rids:
+          rating = predict_rating(user_id, _recipe, sim_Mat, usrItmMat, normalized_usrItmMat)
+          predicted_rating[_recipe] = rating
     
     a = sorted(predicted_rating.items(), key=lambda x: x[1], reverse=True)
     df_rec = pd.DataFrame(a, columns =['recipe_id', 'pred_rating'])
@@ -134,9 +175,24 @@ def get_recommendation(user_id,food_ratings,feature="rating",n_recipe=10):
     # recommend n_recipe recipe
     # return recipe.loc[anime_index.loc[temp.name[:10]]]
 
+"""Method to filter the recipes according to filtering conditions"""
+
+def filter_top_recipes(pred_ratings_feature, filtering=[]):
+  if len(filtering) == 0:
+    return pred_ratings_feature
+  for f in filtering:
+    if f == "vegetarian":
+      filterRecipes = recipes[recipes["vegetarian"] == 1]
+  return pred_ratings_feature[pred_ratings_feature.recipe_id.isin(filterRecipes.id.values)]
+
 """Method to get the list of ratings of top 5 recipes in each feature for all the features """
 
-def get_ratings_of_top_rec_by_feaures(pred_ratings_feature1, pred_rating_feature2, pred_rating_feature3):
+def get_ratings_of_top_rec_by_feaures(pred_ratings_feature1, pred_rating_feature2, pred_rating_feature3, filtering=[]):
+
+  pred_ratings_feature1=filter_top_recipes(pred_ratings_feature1, filtering)
+  pred_rating_feature2=filter_top_recipes(pred_rating_feature2, filtering)
+  pred_rating_feature3=filter_top_recipes(pred_rating_feature3, filtering)
+
   top_pred_ratings_feature1=pred_ratings_feature1.head()
   rec_list1 = top_pred_ratings_feature1.values.tolist()
   rec_list1=[[int(i[0]),i[1]] for i in rec_list1]
@@ -153,18 +209,19 @@ def get_ratings_of_top_rec_by_feaures(pred_ratings_feature1, pred_rating_feature
 
 """Calculate the weighted score of every feature and filter out the common top 3 recommended recipes by all features for a user"""
 
-def get_coll_recommendations(user_id, weather, mood):
+def get_coll_recommendations(user_id, weather, mood, filtering=[]):
 
+# Item Similarity
   # Get the recommendations by each feature for a user
-  rec_by_mood = get_recommendation(user_id,food_ratings,mood,n_recipe=10)
-  rec_by_weather = get_recommendation(user_id,food_ratings,weather,n_recipe=10)
-  rec_overall_selection = get_recommendation(user_id,food_ratings,"rating",n_recipe=10)
+  rec_by_mood = get_recommendation(user_id,food_ratings,mood,max_neighbors=10)
+  rec_by_weather = get_recommendation(user_id,food_ratings,weather,max_neighbors=10)
+  rec_overall_selection = get_recommendation(user_id,food_ratings,"rating",max_neighbors=10)
 
   # Add the top 5 recommended recipes and their scores from each feature to the other features list 
   # so that all the lists contains same recipes and their scores
-  get_all_mood_scores = get_ratings_of_top_rec_by_feaures(rec_by_mood,rec_by_weather,rec_overall_selection)
-  get_all_weather_scores = get_ratings_of_top_rec_by_feaures(rec_by_weather,rec_by_mood,rec_overall_selection)
-  get_all_overall_selection_scores = get_ratings_of_top_rec_by_feaures(rec_overall_selection,rec_by_mood,rec_by_weather)
+  get_all_mood_scores = get_ratings_of_top_rec_by_feaures(rec_by_mood,rec_by_weather,rec_overall_selection, filtering)
+  get_all_weather_scores = get_ratings_of_top_rec_by_feaures(rec_by_weather,rec_by_mood,rec_overall_selection, filtering)
+  get_all_overall_selection_scores = get_ratings_of_top_rec_by_feaures(rec_overall_selection,rec_by_mood,rec_by_weather, filtering)
 
   # Calculate the weighted scores for all recipes in recommended recipe list of each feature
   rbm_weighted = list(map(lambda x: (x[0],x[1] * 0.4), get_all_mood_scores))
@@ -181,8 +238,15 @@ def get_coll_recommendations(user_id, weather, mood):
 
   # Sort the list
   combined_rec = sorted(combined_rec, key=lambda x: x[1], reverse=True)
+  rec_list_items = pd.DataFrame(combined_rec[:3],columns=["recipe_id","pred_rating"])
 
-  return combined_rec[:3]
+# User Similarity
+  user_recomm = get_recommendation(user_id,food_ratings,feature="rating",max_neighbors=10, type="user")
+  user_recomm = filter_top_recipes(user_recomm, filtering)
+  user_rec_list = user_recomm[:3]
+
+
+  return rec_list_items, user_rec_list
   # return rbm_weighted, rbw_weighted, ros_weighted
 
 """Get the recipe name from recipe id"""
@@ -203,6 +267,14 @@ def get_recipe_names_for_all_recommendations(recommended_list):
           recommendations.append([name,cuisine,item[1]])
   recommended_food = pd.DataFrame(recommendations,columns=["Recipe","Cuisine Type","score"])
   return recommended_food
+
+"""Method to get all the recommendations"""
+
+def get_all_recommendations(user_id, weather, mood, filtering=[]):
+  sim_item_recom, sim_user_recom = get_coll_recommendations(user_id, weather, mood, filtering)
+  # sim_item_recom = get_coll_recommendations(user_id, weather, mood, filtering)
+  all_rec = {"Mood Weather Ratings Recommendations":sim_item_recom, "Similar User Recommendations":sim_user_recom}
+  return all_rec
 
 """## Recommended System Evaluation Methods"""
 
@@ -227,9 +299,6 @@ def evaluate(usrItemMat,similarity):
   # actual=np.nan_to_num(actual)
 
 # Example
-combined_rec=get_coll_recommendations(491979,"sunny","happy")
+combined_rec=get_all_recommendations(491979,"sunny","happy", filtering=["vegetarian"])
 
 combined_rec
-
-rec_list = get_recipe_names_for_all_recommendations(combined_rec)
-rec_list

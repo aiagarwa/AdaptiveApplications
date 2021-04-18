@@ -3,6 +3,8 @@ import pandas as pd
 import pdb
 import random
 
+import item_based_coll_filtering_mood_weather_ratings as COL
+
 # import food_api as GOALS
 # import similar_users_recommendation as USERS
 
@@ -49,10 +51,37 @@ class RecommendationEngine():
 
         # NOTE: This will be replaced with calls to the scripts
         # Placeholder for now
+
+        results = COL.get_all_recommendations(
+            user_id=491979,
+            weather=self.user.current_weather,
+            mood=self.user.current_mood,
+            filtering=['cooking_time_less_than_30'])
+
+        mood_weather_key = 'Mood Weather Ratings Recommendations'
+        similar_users_key = 'Similar User Recommendations'
+
         return {
-            'recommendation_type_1': self.get_random_sample_of_recipes(),
-            'recommendation_type_2': self.get_random_sample_of_recipes(),
+            mood_weather_key: self.get_recipes_from_ids(results[mood_weather_key]),
+            similar_users_key: self.get_recipes_from_ids(results[similar_users_key])
         }
+
+
+    @staticmethod
+    def get_recipes_from_ids(score_df):
+        """
+        Match recipes ids from recommendation list to recipe dataset.
+        Used to get all recipe info such as number of steps, ingredients, etc.
+        """
+
+        ids = score_df.recipe_id.tolist()
+
+        recipes = RECIPES.loc[RECIPES.id.isin(ids)]
+
+        # Merge score into recipe info
+        recipes = recipes.merge(score_df, left_on='id', right_on='recipe_id')
+
+        return recipes.to_dict(orient='records')
 
 
     @staticmethod

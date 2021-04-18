@@ -221,6 +221,10 @@ def recommend():
         prefs.health_goals = form.healthGoals.data
         prefs.level_of_activity = form.levelOfActivity.data
         timeToCook = form.timeToCook.data
+
+        # Create tag needed to pass time as filter
+        timeToCook = 'cooking_time_less_than_%s' % timeToCook
+
         prefs.time_to_cook = timeToCook
 
         prefs.current_mood = form.mood.data

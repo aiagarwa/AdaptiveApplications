@@ -177,9 +177,9 @@ def get_recommendation(user_id,food_ratings,feature="rating",max_neighbors=10, t
 
 """Method to filter the recipes according to filtering conditions"""
 
-def filter_top_recipes(pred_ratings_feature, filtering=[]):
+def filter_top_recipes(pred_ratings_feature, filtering=[], allergies =[]):
   filterRecipes = recipes;
-  if len(filtering) == 0:
+  if len(filtering) == 0 and len(allergies) == 0:
     return pred_ratings_feature
   for f in filtering:
     if f == "vegetarian":
@@ -187,15 +187,19 @@ def filter_top_recipes(pred_ratings_feature, filtering=[]):
     elif f.startswith("cooking_time_less_than"):
       mins = int(f.split("_")[-1])
       filterRecipes = filterRecipes[filterRecipes["minutes"] <= mins]
+      
+  for allergy in allergies:
+    filterRecipes = filterRecipes[filterRecipes["ingredients"].str.contains(allergy) == False]
+
   return pred_ratings_feature[pred_ratings_feature.recipe_id.isin(filterRecipes.id.values)]
 
 """Method to get the list of ratings of top 5 recipes in each feature for all the features """
 
-def get_ratings_of_top_rec_by_feaures(pred_ratings_feature1, pred_rating_feature2, pred_rating_feature3, filtering=[]):
+def get_ratings_of_top_rec_by_feaures(pred_ratings_feature1, pred_rating_feature2, pred_rating_feature3, filtering=[], allergies=[]):
 
-  pred_ratings_feature1=filter_top_recipes(pred_ratings_feature1, filtering)
-  pred_rating_feature2=filter_top_recipes(pred_rating_feature2, filtering)
-  pred_rating_feature3=filter_top_recipes(pred_rating_feature3, filtering)
+  pred_ratings_feature1=filter_top_recipes(pred_ratings_feature1, filtering, allergies)
+  pred_rating_feature2=filter_top_recipes(pred_rating_feature2, filtering, allergies)
+  pred_rating_feature3=filter_top_recipes(pred_rating_feature3, filtering, allergies)
 
   top_pred_ratings_feature1=pred_ratings_feature1.head()
   rec_list1 = top_pred_ratings_feature1.values.tolist()
@@ -213,7 +217,7 @@ def get_ratings_of_top_rec_by_feaures(pred_ratings_feature1, pred_rating_feature
 
 """Calculate the weighted score of every feature and filter out the common top 3 recommended recipes by all features for a user"""
 
-def get_coll_recommendations(user_id, weather, mood, filtering=[]):
+def get_coll_recommendations(user_id, weather, mood, filtering=[], allergies=[]):
 
 # Item Similarity
   # Get the recommendations by each feature for a user
@@ -223,9 +227,9 @@ def get_coll_recommendations(user_id, weather, mood, filtering=[]):
 
   # Add the top 5 recommended recipes and their scores from each feature to the other features list 
   # so that all the lists contains same recipes and their scores
-  get_all_mood_scores = get_ratings_of_top_rec_by_feaures(rec_by_mood,rec_by_weather,rec_overall_selection, filtering)
-  get_all_weather_scores = get_ratings_of_top_rec_by_feaures(rec_by_weather,rec_by_mood,rec_overall_selection, filtering)
-  get_all_overall_selection_scores = get_ratings_of_top_rec_by_feaures(rec_overall_selection,rec_by_mood,rec_by_weather, filtering)
+  get_all_mood_scores = get_ratings_of_top_rec_by_feaures(rec_by_mood,rec_by_weather,rec_overall_selection, filtering, allergies)
+  get_all_weather_scores = get_ratings_of_top_rec_by_feaures(rec_by_weather,rec_by_mood,rec_overall_selection, filtering, allergies)
+  get_all_overall_selection_scores = get_ratings_of_top_rec_by_feaures(rec_overall_selection,rec_by_mood,rec_by_weather, filtering, allergies)
 
   # Calculate the weighted scores for all recipes in recommended recipe list of each feature
   rbm_weighted = list(map(lambda x: (x[0],x[1] * 0.4), get_all_mood_scores))
@@ -274,8 +278,8 @@ def get_recipe_names_for_all_recommendations(recommended_list):
 
 """Method to get all the recommendations"""
 
-def get_all_recommendations(user_id, weather, mood, filtering=[]):
-  sim_item_recom, sim_user_recom = get_coll_recommendations(user_id, weather, mood, filtering)
+def get_all_recommendations(user_id, weather, mood, filtering=[], allergies=[]):
+  sim_item_recom, sim_user_recom = get_coll_recommendations(user_id, weather, mood, filtering, allergies)
   # sim_item_recom = get_coll_recommendations(user_id, weather, mood, filtering)
   all_rec = {"Mood Weather Ratings Recommendations":sim_item_recom, "Similar User Recommendations":sim_user_recom}
   return all_rec
@@ -303,6 +307,6 @@ def evaluate(usrItemMat,similarity):
   # actual=np.nan_to_num(actual)
 
 # Example
-combined_rec=get_all_recommendations(491979,"sunny","happy", filtering=["vegetarian", "cooking_time_less_than_30"])
+combined_rec=get_all_recommendations(491979,"sunny","happy", filtering=["vegetarian", "cooking_time_less_than_30"], allergies = ["milk", "butter"])
 
 combined_rec

@@ -189,7 +189,7 @@ def filter_top_recipes(pred_ratings_feature, filtering=[], allergies =[]):
       filterRecipes = filterRecipes[filterRecipes["minutes"] <= mins]
       
   for allergy in allergies:
-    filterRecipes = filterRecipes[filterRecipes["ingredients"].str.contains(allergy) == False]
+    filterRecipes = filterRecipes[filterRecipes[allergy + "_allergic"] == 0]
 
   return pred_ratings_feature[pred_ratings_feature.recipe_id.isin(filterRecipes.id.values)]
 
@@ -307,6 +307,6 @@ def evaluate(usrItemMat,similarity):
   # actual=np.nan_to_num(actual)
 
 # Example
-combined_rec=get_all_recommendations(491979,"sunny","happy", filtering=["vegetarian", "cooking_time_less_than_30"], allergies = ["milk", "butter"])
+combined_rec=get_all_recommendations(491979,"sunny","happy", filtering=["vegetarian", "cooking_time_less_than_30"], allergies = ["dairy", "fish"])
 
 combined_rec

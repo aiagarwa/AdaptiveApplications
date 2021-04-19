@@ -19,8 +19,8 @@ class Preferences():
     def __init__(self):
 
         self.cuisines = []
-
         self.allergies = []
+        self.vegetarian = False
 
         self.level_of_activity = None
 

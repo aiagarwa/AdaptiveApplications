@@ -145,6 +145,8 @@ def preferences():
     # Pre-select user's current preferences
     form.cuisines.default = prefs.cuisines
     form.allergies.default = prefs.allergies
+
+    form.vegetarian.default = prefs.vegetarian if hasattr(prefs, 'vegetarian') else False
     form.process()
 
     return render_template(

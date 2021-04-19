@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import (
+    BooleanField,
     SelectMultipleField,
     StringField,
     SubmitField,
@@ -11,29 +12,35 @@ from wtforms.validators import (
 )
 
 # Turkey has turkey in it - not Turkish?
-cuisines = ["indian", "japanese", "spanish", "english", "mexican", "italian", "chinese", "greek", "french", "african", "thai"]
+cuisines = ['african', 'american', 'chinese', 'english', 'french', 'greek', 'indian', 'italian', 'japanese', 'mexican', 'spanish', 'thai']
+
+allergies = ['dairy', 'egg', 'fish', 'peanuts', 'soya', 'tree_nuts', 'wheat']
 
 class PreferencesForm(FlaskForm):
     """ Food preferences form """
 
     # Create cuisine tuples (LHS = key, RHS = label)
-    cuisines_prepped = []
+    cuisine_options = []
     for c in cuisines:
-        cuisines_prepped.append((c, c.title()))
+        cuisine_options.append((c, c.title()))
 
+    # Create allergy tuples (LHS = key, RHS = label)
+    allergy_options = []
+    for a in allergies:
+        allergy_options.append((a, a.replace('_', ' ')))
 
     allergies = SelectMultipleField(
         'Allergies',
-        choices=[
-            ('dairy', 'dairy'),
-            ('nuts', 'nuts'),
-            ('wheat', 'wheat')
-        ]
+        choices=allergy_options
     )
     cuisines = SelectMultipleField(
         'Cuisines',
         [DataRequired()],
-        choices=cuisines_prepped,
+        choices=cuisine_options,
+    )
+
+    vegetarian = BooleanField(
+        'Vegetarian',
     )
 
     submit = SubmitField('Submit')

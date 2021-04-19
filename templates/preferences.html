@@ -16,7 +16,7 @@
                         Cuisines
                     </div>
                     <div class="col-md-6">
-                        {{ form.cuisines(class="form-control") }}
+                        {{ form.cuisines(class="form-control", style="height:200px") }}
                     </div>
                 </div>
             </div>
@@ -28,11 +28,24 @@
                         Allergies
                     </div>
                     <div class="col-md-6">
-                        {{ form.allergies(class="form-control") }}
+                        {{ form.allergies(class="form-control", style="height:200px") }}
                     </div>
                 </div>
             </div>
         </div>
+
+        <hr class="my-4" />
+
+         <div class="form-group row">
+            <div class="col-md-3">
+                <i class="fas fa-leaf fa-lg pt-1 px-4"></i>
+                Vegetarian
+            </div>
+            <div class="col-md-1 text-left form-check">
+                {{ form.vegetarian(class="form-check-input", style="width: 20px; height: 20px;") }}
+            </div>
+        </div>
+
 
         <hr class="my-4" />
 
@@ -43,11 +56,5 @@
 
     </form>
 </div>
-
-<script>
-function outputUpdate(level) {
-    document.querySelector('#selected-spice').value = level;
-}
-</script>
 
 {% endblock %}

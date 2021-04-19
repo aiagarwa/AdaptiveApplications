@@ -194,11 +194,9 @@ def recipe():
     # Get similar recipes
     prefs = pickle.loads(session["preferences"])
 
-    time_to_cook = session['time_to_cook']
-    prefs.time_to_cook = time_to_cook
     user_id = session['user_id']
-    recommender = RecommendationEngine(prefs, time_to_cook)
-    similar_recipes = recommender.get_recommendation_filters(user_id)
+    recommender = RecommendationEngine(prefs, prefs.time_to_cook)
+    similar_recipes = recommender.get_similar_recipes(recipe['id'])
 
     return render_template(
         "recipe.html",
@@ -228,8 +226,9 @@ def recommend():
         # Create tag needed to pass time as filter
         timeToCook = form.timeToCook.data
         timeToCook = 'cooking_time_less_than_%s' % timeToCook
-        session['time_to_cook'] = timeToCook
         prefs.time_to_cook = timeToCook
+
+        session["preferences"] = pickle.dumps(prefs)
 
         user_id = session['user_id']
         recommender = RecommendationEngine(prefs, timeToCook)

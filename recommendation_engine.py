@@ -4,6 +4,7 @@ import pdb
 import random
 
 import item_based_coll_filtering_mood_weather_ratings as COL
+import item_based_recommendation as IBC
 
 # import food_api as GOALS
 # import similar_users_recommendation as USERS
@@ -40,6 +41,29 @@ class RecommendationEngine():
         print("Stereotype tags: %s" % stereotype['tags'])
 
         return stereotype
+
+
+    def get_similar_recipes(self, recipe_id):
+
+        recipe_name = RECIPES.loc[RECIPES.id == recipe_id].name.values[0]
+
+        # Get recommendations for recipes similar to selected recipe
+        results = IBC.get_recommendation(recipe_name)
+
+        # Get recipe info from df index (NOT recipe id)
+        recipe_ids = list(results.values())
+        recipes = RECIPES.iloc[recipe_ids]
+
+        # Add reason why recipe was suggested
+        # I.e.: ingredients, nutrition, recipe
+        for i in results:
+            recipes.loc[recipes.index == results[i], 'reason'] = i
+
+        key = 'Similiar Recipes Recommendations'
+
+        return {
+            key: recipes.to_dict(orient='records')
+        }
 
 
     def get_recommendation_filters(self, user_id):

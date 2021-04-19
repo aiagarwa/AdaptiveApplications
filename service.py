@@ -232,7 +232,16 @@ def recommend():
 
         user_id = session['user_id']
         recommender = RecommendationEngine(prefs, timeToCook)
-        recommendations = recommender.get_recommendation_filters(user_id)
+
+        if UserHistory.query.filter_by(user_id=user_id).count() == 0:
+            # User is using application for first time
+            # Show recommendations based off cuisine and allergies
+            recommendations = recommender.get_initial_recommendations()
+        else:
+            # Not user's first time - we now have user history
+            # Can use adaptive algorithm
+            # recommendations = recommender.get_initial_recommendations()
+            recommendations = recommender.get_recommendation_filters(user_id=491979)
 
         selection_form = RecipeSelectionForm()
 

@@ -76,6 +76,9 @@ def generate_recommendations(user):
     df = filter_by_cuisine(df, user)
     df = remove_recipes_with_allergies(df, user)
 
+    if user.vegetarian == True:
+        df = df.loc[df.vegetarian == 1]
+
     recommendations = df.head(3)
     recommendations.fillna('', inplace=True)
 

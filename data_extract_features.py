@@ -301,10 +301,10 @@ for ingredient in recipes.ingredients:
 recipes.insert(len(recipes.columns), "dairy_allergic", dairy_flags)
 recipes.insert(len(recipes.columns), "egg_allergic", egg_flags)
 recipes.insert(len(recipes.columns), "soya_allergic", soya_flags)
-recipes.insert(len(recipes.columns), "tree_nut_allergic", tree_nuts_flags)
+recipes.insert(len(recipes.columns), "tree_nuts_allergic", tree_nuts_flags)
 recipes.insert(len(recipes.columns), "wheat_allergic", wheat_flags)
 recipes.insert(len(recipes.columns), "fish_allergic", fish_flags)
-recipes.insert(len(recipes.columns), "peanut_allergic", peanuts_flags)
+recipes.insert(len(recipes.columns), "peanuts_allergic", peanuts_flags)
 
 recipes.head()
 

@@ -250,7 +250,7 @@ def get_coll_recommendations(user_id, weather, mood, filtering=[], allergies=[])
 
 # User Similarity
   user_recomm = get_recommendation(user_id,food_ratings,feature="rating",max_neighbors=10, type="user")
-  user_recomm = filter_top_recipes(user_recomm, filtering)
+  user_recomm = filter_top_recipes(user_recomm, filtering, allergies)
   user_rec_list = user_recomm[:3]
 
 

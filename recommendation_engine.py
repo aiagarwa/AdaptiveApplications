@@ -6,7 +6,7 @@ import random
 import item_based_coll_filtering_mood_weather_ratings as COL
 import item_based_recommendation as IBC
 
-# import food_api as GOALS
+import food_api as FIRST_REC
 # import similar_users_recommendation as USERS
 
 # Stereotypes attributes are stored in an .ini file
@@ -63,6 +63,21 @@ class RecommendationEngine():
 
         return {
             key: recipes.to_dict(orient='records')
+        }
+
+
+    def get_initial_recommendations(self):
+        """
+        Get very first recommendation for user. After which the adaptive
+        algorithm will be used
+        """
+
+        results = FIRST_REC.generate_recommendations(self.user)
+
+        key = 'Initial Recommendations'
+
+        return {
+            key: results
         }
 
 

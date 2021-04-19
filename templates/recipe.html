@@ -89,7 +89,11 @@
                             </h6>
 
                             <p class="card-text">
-                                {{ recipe.description.capitalize() | truncate(150) }} ...
+                                {% if recipe['description'] is not float %}
+                                    {{ recipe.description.capitalize() | truncate(150) }} ...
+                                {% else %}
+                                    <i>No description available</i>
+                                {% endif %}
                             </p>
                         </div>
                     </div>

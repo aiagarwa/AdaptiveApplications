@@ -193,8 +193,12 @@ def recipe():
 
     # Get similar recipes
     prefs = pickle.loads(session["preferences"])
-    recommender = RecommendationEngine(prefs, 30)
-    similar_recipes = recommender.get_recommendation_filters()
+
+    time_to_cook = session['time_to_cook']
+    prefs.time_to_cook = time_to_cook
+    user_id = session['user_id']
+    recommender = RecommendationEngine(prefs, time_to_cook)
+    similar_recipes = recommender.get_recommendation_filters(user_id)
 
     return render_template(
         "recipe.html",
@@ -218,18 +222,18 @@ def recommend():
     if form.validate_on_submit():
         prefs.health_goals = form.healthGoals.data
         prefs.level_of_activity = form.levelOfActivity.data
-        timeToCook = form.timeToCook.data
-
-        # Create tag needed to pass time as filter
-        timeToCook = 'cooking_time_less_than_%s' % timeToCook
-
-        prefs.time_to_cook = timeToCook
-
         prefs.current_mood = form.mood.data
         prefs.current_weather = form.weather.data
 
+        # Create tag needed to pass time as filter
+        timeToCook = form.timeToCook.data
+        timeToCook = 'cooking_time_less_than_%s' % timeToCook
+        session['time_to_cook'] = timeToCook
+        prefs.time_to_cook = timeToCook
+
+        user_id = session['user_id']
         recommender = RecommendationEngine(prefs, timeToCook)
-        recommendations = recommender.get_recommendation_filters()
+        recommendations = recommender.get_recommendation_filters(user_id)
 
         selection_form = RecipeSelectionForm()
 

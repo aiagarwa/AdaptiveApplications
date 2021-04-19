@@ -42,7 +42,7 @@ class RecommendationEngine():
         return stereotype
 
 
-    def get_recommendation_filters(self):
+    def get_recommendation_filters(self, user_id):
         """
         Get the recommendations based off of:
         * similar users
@@ -52,11 +52,16 @@ class RecommendationEngine():
         # NOTE: This will be replaced with calls to the scripts
         # Placeholder for now
 
+        filter_list = [self.user.time_to_cook]
+        if self.user.vegetarian == True:
+            filter_list.append('vegetarian')
+
         results = COL.get_all_recommendations(
-            user_id=491979,
+            user_id=user_id,
             weather=self.user.current_weather,
             mood=self.user.current_mood,
-            filtering=['cooking_time_less_than_30'])
+            filtering=filter_list,
+            allergies=self.user.allergies)
 
         mood_weather_key = 'Mood Weather Ratings Recommendations'
         similar_users_key = 'Similar User Recommendations'

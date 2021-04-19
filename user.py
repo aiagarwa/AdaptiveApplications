@@ -14,27 +14,9 @@ class User(db.Model):
 
         self.preferences = Preferences()
 
-        # self.set_default_values()
-
-
-    def set_default_values(self):
-        self.spiciness = 5
-
-        self.cuisines = ["indian", "italian"]
-
-        self.allergies = ["dairy"]
-
-        self.level_of_activity = 5
-
-        self.health_goals = ["eat_less_fat"]
-
-        self.max_number_of_ingredients = 10
-
 
 class Preferences():
     def __init__(self):
-
-        self.spiciness = 5
 
         self.cuisines = []
 
@@ -43,13 +25,6 @@ class Preferences():
         self.level_of_activity = None
 
         self.health_goals = []
-
-        self.max_number_of_ingredients = None
-
-        # Foods user likes to eat for each mood
-        self.happy_foods = []
-        self.sad_foods = []
-        self.angry_foods = []
 
 
     def update(self, data):

@@ -35,26 +35,5 @@ class PreferencesForm(FlaskForm):
         [DataRequired()],
         choices=cuisines_prepped,
     )
-    spiciness = IntegerRangeField(
-        'Spiciness',
-        default=5,
-    )
-
-    # Mood inputs
-    happy_foods = SelectMultipleField(
-        'Happy',
-        [DataRequired()],
-        choices=cuisines_prepped,
-    )
-    sad_foods = SelectMultipleField(
-        'Sad',
-        [DataRequired()],
-        choices=cuisines_prepped,
-    )
-    angry_foods = SelectMultipleField(
-        'Angry',
-        [DataRequired()],
-        choices=cuisines_prepped,
-    )
 
     submit = SubmitField('Submit')

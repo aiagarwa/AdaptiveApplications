@@ -36,53 +36,6 @@
 
         <hr class="my-4" />
 
-        <div class="form-group row">
-            <div class="col-md-2">
-                <i class="fas fa-pepper-hot fa-lg pt-1 px-4"></i>
-                Spice
-            </div>
-            <div class="col-md-3">
-                {{ form.spiciness(min=0, max=10, oninput="outputUpdate(value)") }}
-                <output for="spice" id="selected-spice" class="ml-3">
-                    {{ form.spiciness.data }}
-                </output>
-            </div>
-        </div>
-
-        <hr class="my-4" />
-
-        <div>
-            <h5 class="theme-green-dark">
-                What are your favourite foods for each mood?
-            </h5>
-            <div class="row">
-                {% set iconStyling = 'fas fa-2x pt-1 px-4' %}
-
-                <div class="col-md-4" style="border-radius: 5px;">
-                    <div class="py-2 text-center theme-green-light">
-                        <i class="{{ iconStyling }} fa-smile"></i>
-                        <h6 class="pt-2">Happy</h6>
-                    </div>
-                    {{ form.happy_foods(class="form-control") }}
-                </div>
-                <div class="col-md-4" style="border-radius: 5px;">
-                    <div class="py-2 text-center theme-blue">
-                        <i class="{{ iconStyling }} fa-frown"></i>
-                        <h6 class="pt-2">Sad</h6>
-                    </div>
-                    {{ form.sad_foods(class="form-control") }}
-                </div>
-                <div class="col-md-4" style="border-radius: 5px;">
-                    <div class="py-2 text-center text-danger ">
-                        <i class="{{ iconStyling }} fa-angry"></i>
-                        <h6 class="pt-2">Angry</h6>
-                    </div>
-                    {{ form.angry_foods(class="form-control") }}
-                </div>
-            </div>
-        </div>
-
-
         <div class="text-center pt-3">
             {{ form.csrf_token }}
             {{ form.submit(class="btn btn-primary mt-3") }}

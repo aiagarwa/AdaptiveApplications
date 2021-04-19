@@ -145,10 +145,6 @@ def preferences():
     # Pre-select user's current preferences
     form.cuisines.default = prefs.cuisines
     form.allergies.default = prefs.allergies
-    form.spiciness.default = prefs.spiciness
-    form.happy_foods.default = prefs.happy_foods
-    form.sad_foods.default = prefs.sad_foods
-    form.angry_foods.default = prefs.angry_foods
     form.process()
 
     return render_template(

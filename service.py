@@ -145,10 +145,8 @@ def preferences():
     # Pre-select user's current preferences
     form.cuisines.default = prefs.cuisines
     form.allergies.default = prefs.allergies
-    form.spiciness.default = prefs.spiciness
-    form.happy_foods.default = prefs.happy_foods
-    form.sad_foods.default = prefs.sad_foods
-    form.angry_foods.default = prefs.angry_foods
+
+    form.vegetarian.default = prefs.vegetarian if hasattr(prefs, 'vegetarian') else False
     form.process()
 
     return render_template(
@@ -195,8 +193,10 @@ def recipe():
 
     # Get similar recipes
     prefs = pickle.loads(session["preferences"])
-    recommender = RecommendationEngine(prefs, 30)
-    similar_recipes = recommender.get_recommendation_filters()
+
+    user_id = session['user_id']
+    recommender = RecommendationEngine(prefs, prefs.time_to_cook)
+    similar_recipes = recommender.get_similar_recipes(recipe['id'])
 
     return render_template(
         "recipe.html",
@@ -220,14 +220,28 @@ def recommend():
     if form.validate_on_submit():
         prefs.health_goals = form.healthGoals.data
         prefs.level_of_activity = form.levelOfActivity.data
-        timeToCook = form.timeToCook.data
-        prefs.time_to_cook = timeToCook
-
         prefs.current_mood = form.mood.data
         prefs.current_weather = form.weather.data
 
+        # Create tag needed to pass time as filter
+        timeToCook = form.timeToCook.data
+        timeToCook = 'cooking_time_less_than_%s' % timeToCook
+        prefs.time_to_cook = timeToCook
+
+        session["preferences"] = pickle.dumps(prefs)
+
+        user_id = session['user_id']
         recommender = RecommendationEngine(prefs, timeToCook)
-        recommendations = recommender.get_recommendation_filters()
+
+        if UserHistory.query.filter_by(user_id=user_id).count() == 0:
+            # User is using application for first time
+            # Show recommendations based off cuisine and allergies
+            recommendations = recommender.get_initial_recommendations()
+        else:
+            # Not user's first time - we now have user history
+            # Can use adaptive algorithm
+            # recommendations = recommender.get_initial_recommendations()
+            recommendations = recommender.get_recommendation_filters(user_id=491979)
 
         selection_form = RecipeSelectionForm()
 

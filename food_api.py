@@ -5,14 +5,17 @@ import requests
 
 from user import User
 
-FILENAME = 'resources/RAW_recipes.csv'
+FILENAME = 'datasets/recipes_less_data_v3.csv'
 
 DF = pd.read_csv(FILENAME)
 
 
 def filter_by_time(df, user):
     """ Filter recipes by user's available time to cook """
-    return df.loc[df.minutes <= user.time_to_cook]
+
+    time = user.time_to_cook.replace('cooking_time_less_than_', '')
+
+    return df.loc[df.minutes <= int(time)]
 
 
 def filter_by_cuisine(df, user):
@@ -25,23 +28,7 @@ def filter_by_cuisine(df, user):
         # User has selected no cuisines - do not need to remove recipes
         return df
 
-    df['cuisine_match'] = df.apply(lambda row:
-        check_if_recipe_matches_cuisine(row.tags, user), axis=1)
-
-    return df.loc[df.cuisine_match == True]
-
-
-def check_if_recipe_matches_cuisine(tags, user):
-    """ Check recipe tags for user's selected cuisine(s) """
-
-    # Convert string containing list to list
-    tags = ast.literal_eval(tags)
-
-    if len(list(set(tags) & set(user.cuisines))) > 0:
-        # Recipe tags contains user's cuisine(s)
-        return True
-
-    return False
+    return df.loc[df.cuisines.isin(user.cuisines)]
 
 
 def remove_recipes_with_allergies(df, user):
@@ -54,23 +41,9 @@ def remove_recipes_with_allergies(df, user):
         # User has no allergies - do not need to remove recipes
         return df
 
-    df['allergy_present'] = df.apply(lambda row:
-        check_for_allergies(row.ingredients, user), axis=1)
+    allergies = [a + '_allergic' for a in user.allergies]
 
-    return df.loc[df['allergy_present'] == False]
-
-
-def check_for_allergies(ingredients, user):
-    """ Check recipe ingredients for allergies """
-
-    # Convert string containing list to list
-    recipe = ast.literal_eval(ingredients)
-
-    if len(list(set(recipe) & set(user.allergies))) > 0:
-        # Recipe ingredients contains allergy
-        return True
-
-    return False
+    return df.loc[df[allergies].any(1) == False]
 
 
 def get_unique_tags(df):
@@ -100,15 +73,13 @@ def generate_recommendations(user):
     df = DF
 
     df = filter_by_time(df, user)
-    print("# of rows - time filter: %s" % len(df))
-
     df = filter_by_cuisine(df, user)
-
     df = remove_recipes_with_allergies(df, user)
-    print("# of rows - allergy filter: %s" % len(df))
 
-    # TODO: this needs to be made smarter (not just first 2 results)
-    recommendations = df.head(2)
+    if user.vegetarian == True:
+        df = df.loc[df.vegetarian == 1]
+
+    recommendations = df.head(3)
     recommendations.fillna('', inplace=True)
 
     # Convert DataFrame to JSON like object

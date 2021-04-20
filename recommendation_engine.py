@@ -3,7 +3,10 @@ import pandas as pd
 import pdb
 import random
 
-# import food_api as GOALS
+import item_based_coll_filtering_mood_weather_ratings as COL
+import item_based_recommendation as IBC
+
+import food_api as FIRST_REC
 # import similar_users_recommendation as USERS
 
 # Stereotypes attributes are stored in an .ini file
@@ -40,7 +43,45 @@ class RecommendationEngine():
         return stereotype
 
 
-    def get_recommendation_filters(self):
+    def get_similar_recipes(self, recipe_id):
+
+        recipe_name = RECIPES.loc[RECIPES.id == recipe_id].name.values[0]
+
+        # Get recommendations for recipes similar to selected recipe
+        results = IBC.get_recommendation(recipe_name)
+
+        # Get recipe info from df index (NOT recipe id)
+        recipe_ids = list(results.values())
+        recipes = RECIPES.iloc[recipe_ids]
+
+        # Add reason why recipe was suggested
+        # I.e.: ingredients, nutrition, recipe
+        for i in results:
+            recipes.loc[recipes.index == results[i], 'reason'] = i
+
+        key = 'Similiar Recipes Recommendations'
+
+        return {
+            key: recipes.to_dict(orient='records')
+        }
+
+
+    def get_initial_recommendations(self):
+        """
+        Get very first recommendation for user. After which the adaptive
+        algorithm will be used
+        """
+
+        results = FIRST_REC.generate_recommendations(self.user)
+
+        key = 'Initial Recommendations'
+
+        return {
+            key: results
+        }
+
+
+    def get_recommendation_filters(self, user_id):
         """
         Get the recommendations based off of:
         * similar users
@@ -49,10 +90,42 @@ class RecommendationEngine():
 
         # NOTE: This will be replaced with calls to the scripts
         # Placeholder for now
+
+        filter_list = [self.user.time_to_cook]
+        if self.user.vegetarian == True:
+            filter_list.append('vegetarian')
+
+        results = COL.get_all_recommendations(
+            user_id=user_id,
+            weather=self.user.current_weather,
+            mood=self.user.current_mood,
+            filtering=filter_list,
+            allergies=self.user.allergies)
+
+        mood_weather_key = 'Mood Weather Ratings Recommendations'
+        similar_users_key = 'Similar User Recommendations'
+
         return {
-            'recommendation_type_1': self.get_random_sample_of_recipes(),
-            'recommendation_type_2': self.get_random_sample_of_recipes(),
+            mood_weather_key: self.get_recipes_from_ids(results[mood_weather_key]),
+            similar_users_key: self.get_recipes_from_ids(results[similar_users_key])
         }
+
+
+    @staticmethod
+    def get_recipes_from_ids(score_df):
+        """
+        Match recipes ids from recommendation list to recipe dataset.
+        Used to get all recipe info such as number of steps, ingredients, etc.
+        """
+
+        ids = score_df.recipe_id.tolist()
+
+        recipes = RECIPES.loc[RECIPES.id.isin(ids)]
+
+        # Merge score into recipe info
+        recipes = recipes.merge(score_df, left_on='id', right_on='recipe_id')
+
+        return recipes.to_dict(orient='records')
 
 
     @staticmethod

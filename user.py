@@ -24,7 +24,7 @@ class Preferences():
 
         self.level_of_activity = None
 
-        self.health_goals = []
+        # self.health_goals = []
 
 
     def update(self, data):

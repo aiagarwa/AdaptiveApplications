@@ -15,14 +15,14 @@ from wtforms.validators import (
 class RecommendForm(FlaskForm):
     """ Form for meal recommendation """
 
-    healthGoals = SelectMultipleField(
-        'Health Goals',
-        [DataRequired()],
-        choices=[
-            ('less_fat', 'Eat less fat'),
-            ('more_veg', 'Eat more vegetables'),
-        ],
-    )
+    # healthGoals = SelectMultipleField(
+    #     'Health Goals',
+    #     [DataRequired()],
+    #     choices=[
+    #         ('less_fat', 'Eat less fat'),
+    #         ('more_veg', 'Eat more vegetables'),
+    #     ],
+    # )
     levelOfActivity = IntegerRangeField(
         'Level of Activity',
         default=5,

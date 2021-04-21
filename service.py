@@ -218,7 +218,6 @@ def recommend():
 
     form = RecommendForm()
     if form.validate_on_submit():
-        prefs.health_goals = form.healthGoals.data
         prefs.level_of_activity = form.levelOfActivity.data
         prefs.current_mood = form.mood.data
         prefs.current_weather = form.weather.data

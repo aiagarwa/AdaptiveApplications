@@ -24,23 +24,23 @@ class RecommendationEngine():
         self.time_to_cook = time_to_cook
 
 
-    def match_to_stereotype(self):
-        """
-        TODO: get stereotype for user
-         - We could make this a stereotype for their health goal(s)?
-        """
+    # def match_to_stereotype(self):
+    #     """
+    #     TODO: get stereotype for user
+    #      - We could make this a stereotype for their health goal(s)?
+    #     """
 
-        # Example of goal: 'less_fat'
-        goal = self.user.health_goals[0]
+    #     # Example of goal: 'less_fat'
+    #     goal = self.user.health_goals[0]
 
-        # TODO: if users can have more than one health goal this will need to
-        # be updated
-        stereotype = dict(config.items(goal))
-        print("Stereotype: %s" % goal)
-        print("Stereotype cuisines: %s" % stereotype['cuisines'])
-        print("Stereotype tags: %s" % stereotype['tags'])
+    #     # TODO: if users can have more than one health goal this will need to
+    #     # be updated
+    #     stereotype = dict(config.items(goal))
+    #     print("Stereotype: %s" % goal)
+    #     print("Stereotype cuisines: %s" % stereotype['cuisines'])
+    #     print("Stereotype tags: %s" % stereotype['tags'])
 
-        return stereotype
+    #     return stereotype
 
 
     def get_similar_recipes(self, recipe_id):

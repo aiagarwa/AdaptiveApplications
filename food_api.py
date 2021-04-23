@@ -79,7 +79,7 @@ def generate_recommendations(user):
     if user.vegetarian == True:
         df = df.loc[df.vegetarian == 1]
 
-    recommendations = df.head(3)
+    recommendations = df.head(6)
     recommendations.fillna('', inplace=True)
 
     # Convert DataFrame to JSON like object

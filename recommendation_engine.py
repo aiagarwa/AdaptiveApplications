@@ -47,12 +47,21 @@ class RecommendationEngine():
 
         recipe_name = RECIPES.loc[RECIPES.id == recipe_id].name.values[0]
 
+        # Content-based filtering doesn't take cooking time into account
+        # filter_list = [self.user.time_to_cook]
+        filter_list = []
+        if self.user.vegetarian == True:
+            filter_list.append('vegetarian')
+
         # Get recommendations for recipes similar to selected recipe
-        results = IBC.get_recommendation(recipe_name)
+        results = IBC.get_recommendation(recipe_name,
+            filtering=filter_list,
+            allergies=self.user.allergies)
 
         # Get recipe info from df index (NOT recipe id)
         recipe_ids = list(results.values())
-        recipes = RECIPES.iloc[recipe_ids]
+
+        recipes = RECIPES.loc[RECIPES.id.isin(recipe_ids)]
 
         # Add reason why recipe was suggested
         # I.e.: ingredients, nutrition, recipe

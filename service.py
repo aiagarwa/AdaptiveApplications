@@ -129,6 +129,11 @@ def preferences():
     form = PreferencesForm()
     if form.validate_on_submit():
         # Get form values and update user preferences
+
+        # Remove N/A value from allergies list
+        if '---' in form.data['allergies']:
+            form.data['allergies'].remove('---')
+
         data = form.data
         prefs.update(data)
 
@@ -240,7 +245,7 @@ def recommend():
             # Not user's first time - we now have user history
             # Can use adaptive algorithm
             # recommendations = recommender.get_initial_recommendations()
-            recommendations = recommender.get_recommendation_filters(user_id=491979)
+            recommendations = recommender.get_recommendation_filters(user_id)
 
         selection_form = RecipeSelectionForm()
 

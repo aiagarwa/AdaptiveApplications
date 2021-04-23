@@ -14,7 +14,7 @@ from wtforms.validators import (
 # Turkey has turkey in it - not Turkish?
 cuisines = ['african', 'american', 'chinese', 'english', 'french', 'greek', 'indian', 'italian', 'japanese', 'mexican', 'spanish', 'thai']
 
-allergies = ['dairy', 'egg', 'fish', 'peanuts', 'soya', 'tree_nuts', 'wheat']
+allergies = ['---', 'dairy', 'egg', 'fish', 'peanuts', 'soya', 'tree_nuts', 'wheat']
 
 class PreferencesForm(FlaskForm):
     """ Food preferences form """
@@ -31,7 +31,8 @@ class PreferencesForm(FlaskForm):
 
     allergies = SelectMultipleField(
         'Allergies',
-        choices=allergy_options
+        choices=allergy_options,
+        default=allergy_options[0]
     )
     cuisines = SelectMultipleField(
         'Cuisines',

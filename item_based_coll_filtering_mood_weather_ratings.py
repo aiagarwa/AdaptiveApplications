@@ -246,12 +246,12 @@ def get_coll_recommendations(user_id, weather, mood, filtering=[], allergies=[])
 
   # Sort the list
   combined_rec = sorted(combined_rec, key=lambda x: x[1], reverse=True)
-  rec_list_items = pd.DataFrame(combined_rec[:3],columns=["recipe_id","pred_rating"])
+  rec_list_items = pd.DataFrame(combined_rec[:10],columns=["recipe_id","pred_rating"])
 
 # User Similarity
   user_recomm = get_recommendation(user_id,food_ratings,feature="rating",max_neighbors=10, type="user")
   user_recomm = filter_top_recipes(user_recomm, filtering, allergies)
-  user_rec_list = user_recomm[:3]
+  user_rec_list = user_recomm[:20]
 
 
   return rec_list_items, user_rec_list
@@ -281,7 +281,7 @@ def get_recipe_names_for_all_recommendations(recommended_list):
 def get_all_recommendations(user_id, weather, mood, filtering=[], allergies=[]):
   sim_item_recom, sim_user_recom = get_coll_recommendations(user_id, weather, mood, filtering, allergies)
   # sim_item_recom = get_coll_recommendations(user_id, weather, mood, filtering)
-  all_rec = {"Mood Weather Ratings Recommendations":sim_item_recom, "Similar User Recommendations":sim_user_recom}
+  all_rec = {"Mood Weather Ratings Recommendations":sim_item_recom.sample(n=3), "Similar User Recommendations":sim_user_recom.sample(n=3)}
   return all_rec
 
 """## Recommended System Evaluation Methods"""
